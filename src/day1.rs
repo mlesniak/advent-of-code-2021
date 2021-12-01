@@ -1,7 +1,12 @@
 use std::fs::File;
 use std::io::Read;
 
-pub fn day1() {
+pub enum Part {
+    Part1,
+    Part2
+}
+
+pub fn day1(part: Part) {
     let s = read_file("day1.txt");
     let lines: Vec<&str> = s.split("\n").collect();
     let mut numbers: Vec<i32> = Vec::new();
@@ -10,8 +15,10 @@ pub fn day1() {
         numbers.push(x);
     }
 
-    //  part1(&mut numbers);
-    part2(&mut numbers);
+    match part {
+        Part::Part1 => part1(&numbers),
+        Part::Part2 => part2(&numbers)
+    }
 }
 
 fn part2(numbers: &Vec<i32>) {
@@ -45,10 +52,8 @@ fn part1(numbers: &Vec<i32>) {
 fn read_file(path: &str) -> String {
     let mut f = File::open(path).unwrap();
     let mut s = String::new();
-    f.read_to_string(&mut s);
-    s
-}
-
-fn print_type_of<T>(_: &T) {
-    println!("{}", std::any::type_name::<T>())
+    match f.read_to_string(&mut s) {
+        Ok(_) => s,
+        Err(_) => panic!("Unable to read input file")
+    }
 }
