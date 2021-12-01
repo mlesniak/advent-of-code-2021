@@ -1,4 +1,6 @@
+mod day1;
+
 fn main() {
-    println!("AOC 2021");
+    day1::day1();
 }
 
