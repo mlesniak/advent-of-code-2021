@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::Read;
 
 pub fn day1() {
-    let s = readFile("day1.txt");
+    let s = read_file("day1.txt");
     let lines: Vec<&str> = s.split("\n").collect();
     let mut numbers: Vec<i32> = Vec::new();
     for line in lines {
@@ -42,7 +42,7 @@ fn part1(numbers: &Vec<i32>) {
     println!("{}", increase);
 }
 
-fn readFile(path: &str) -> String {
+fn read_file(path: &str) -> String {
     let mut f = File::open(path).unwrap();
     let mut s = String::new();
     f.read_to_string(&mut s);
