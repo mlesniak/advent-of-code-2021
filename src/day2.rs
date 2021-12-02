@@ -1,13 +1,7 @@
-use std::fs::File;
-use std::io::Read;
-
-pub enum Part {
-    Part1,
-    Part2,
-}
+use crate::util;
 
 pub fn part2() {
-    let s = read_file("day2.txt");
+    let s = util::read_file("day2.txt");
     let lines: Vec<_> = s.split("\n").collect();
 
     let mut aim = 0;
@@ -37,7 +31,7 @@ pub fn part2() {
 }
 
 pub fn part1() {
-    let s = read_file("day2.txt");
+    let s = util::read_file("day2.txt");
     let lines: Vec<_> = s.split("\n").collect();
 
     let mut x = 0;
@@ -61,11 +55,3 @@ pub fn part1() {
     println!("{}", res);
 }
 
-fn read_file(path: &str) -> String {
-    let mut f = File::open(path).unwrap();
-    let mut s = String::new();
-    match f.read_to_string(&mut s) {
-        Ok(_) => s,
-        Err(_) => panic!("Unable to read input file")
-    }
-}

@@ -1,5 +1,6 @@
 mod day1;
 mod day2;
+mod util;
 
 fn main() {
     // day1::day1(day1::Part::Part1);
