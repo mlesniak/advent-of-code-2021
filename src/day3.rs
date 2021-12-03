@@ -88,10 +88,19 @@ pub fn part2() {
         }
 
         // Co2
+        ones = 0;
+        for line in &co2 {
+            let c = line.chars().nth(bitPos).unwrap();
+            match c {
+                '0' => ones -= 1,
+                '1' => ones += 1,
+                _ => panic!("Unknown symbol {}", c),
+            }
+        }
         if co2.len() > 1 {
             if ones >= 0 {
                 filter = '0';
-            } else {
+            } else  {
                 filter = '1';
             }
             println!("  co2 filter={}", filter);
@@ -105,13 +114,11 @@ pub fn part2() {
             co2 = to;
             println!("  co2={:?}", co2);
         }
-
-        let o2 = isize::from_str_radix(&o2.iter().next().unwrap(), 2).unwrap();
-        let co2 = isize::from_str_radix(&co2.iter().next().unwrap(), 2).unwrap();
-        println!("o2={:?}", o2);
-        println!("co2={:?}", co2);
-        println!("result={}", o2 * co2);
-
     }
 
+    let o2 = isize::from_str_radix(&o2.iter().next().unwrap(), 2).unwrap();
+    let co2 = isize::from_str_radix(&co2.iter().next().unwrap(), 2).unwrap();
+    println!("o2={:?}", o2);
+    println!("co2={:?}", co2);
+    println!("result={}", o2 * co2);
 }
