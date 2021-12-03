@@ -1,7 +1,7 @@
-use crate::util;
+use crate::util::read_file;
 
 pub fn part2() {
-    let s = util::read_file("day2.txt");
+    let s = read_file("day2.txt");
     let lines: Vec<_> = s.split("\n").collect();
 
     let mut aim = 0;
@@ -31,7 +31,7 @@ pub fn part2() {
 }
 
 pub fn part1() {
-    let s = util::read_file("day2.txt");
+    let s = read_file("day2.txt");
     let lines: Vec<_> = s.split("\n").collect();
 
     let mut x = 0;
