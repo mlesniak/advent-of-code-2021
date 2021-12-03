@@ -8,7 +8,8 @@ pub fn part1() {
     let mut gamma: Vec<String> = Vec::new();
     let mut epsilon: Vec<String> = Vec::new();
 
-    for i in 0..5 {
+    let maxLen = lines[0].len();
+    for i in 0..maxLen {
         println!("{}", i);
         let mut ones = 0;
         for line in &lines {
