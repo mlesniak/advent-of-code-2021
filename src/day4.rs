@@ -1,3 +1,5 @@
+use std::process::exit;
+
 use crate::util::read_lines;
 
 #[derive(Debug)]
@@ -36,6 +38,52 @@ impl Board {
             }
         }
     }
+
+    fn checkWin(self: &Board) -> bool {
+        // Rows
+        for row in &self.board {
+            let mut allok = true;
+            for bn in row {
+                if bn.marked == false {
+                    allok = false;
+                    break;
+                }
+            }
+            if !allok {
+                continue;
+            }
+            return true;
+        }
+
+        for col in 0..5 {
+            let mut allok = true;
+            for row in 0..5 {
+                if self.board.get(row).unwrap().get(col).unwrap().marked == false {
+                    allok = false;
+                    break;
+                }
+            }
+            if !allok {
+                continue;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    fn score(self: &Board) -> i32 {
+        let mut sum = 0;
+        for row in &self.board {
+           for bn in row {
+               if !bn.marked {
+                   sum += bn.number;
+               }
+           }
+        }
+
+        return sum
+    }
 }
 
 pub fn part1() {
@@ -59,7 +107,10 @@ pub fn part1() {
         }
 
         for b in &boards {
-            println!("{:?}", b);
+            if b.checkWin() {
+                println!("won!!! {:?}", b.score() *  number);
+                exit(0)
+            }
         }
     }
 }
