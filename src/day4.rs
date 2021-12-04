@@ -27,7 +27,7 @@ impl Board {
         Board { board }
     }
 
-    fn mark(mut self: &mut Board, number: i32) {
+    fn mark(self: &mut Board, number: i32) {
         for row in &mut self.board {
             for bn in row {
                 if bn.number == number {
