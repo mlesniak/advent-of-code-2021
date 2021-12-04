@@ -1,14 +1,15 @@
+use std::collections::HashSet;
 use std::process::exit;
 
 use crate::util::read_lines;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Hash,Clone)]
 struct BoardNumber {
     number: i32,
     marked: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Hash,Clone)]
 struct Board {
     board: Vec<Vec<BoardNumber>>,
 }
@@ -75,14 +76,14 @@ impl Board {
     fn score(self: &Board) -> i32 {
         let mut sum = 0;
         for row in &self.board {
-           for bn in row {
-               if !bn.marked {
-                   sum += bn.number;
-               }
-           }
+            for bn in row {
+                if !bn.marked {
+                    sum += bn.number;
+                }
+            }
         }
 
-        return sum
+        return sum;
     }
 }
 
@@ -108,11 +109,55 @@ pub fn part1() {
 
         for b in &boards {
             if b.checkWin() {
-                println!("won!!! {:?}", b.score() *  number);
+                println!("won!!! {:?}", b.score() * number);
                 exit(0)
             }
         }
     }
 }
 
-pub fn part2() {}
+pub fn part2() {
+    let lines = read_lines("day4.txt");
+
+    let numbers: Vec<i32> = lines[0].split(",").map(|x| x.parse().unwrap()).collect();
+    // println!("{:?}", numbers);
+
+    let mut boards = Vec::new();
+    for start in (2..lines.len()).step_by(5 + 1) {
+        let b = Board::read(&lines, start);
+        boards.push(b);
+    }
+
+    for number in numbers {
+        println!("------- {}", number);
+        for board in boards.iter_mut() {
+            board.mark(number);
+        }
+
+        let mut won_but_not_last = Vec::new();
+        for b in &boards {
+            println!("Checking {:?}", b);
+            if b.checkWin() {
+                if boards.len() == 1 {
+                    println!("won!!! {:?}", b.score() * number);
+                    exit(0)
+                } else {
+                    println!("won, ignoring it from now {:?}", b);
+                    let hhh = (*b).clone();
+                    won_but_not_last.push(hhh);
+                }
+            }
+        }
+        boards.retain(|k| !contains(&won_but_not_last, k));
+    }
+
+    fn contains(bs: &Vec<Board>, b: &Board) -> bool {
+        for x in bs {
+            if x == b {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
