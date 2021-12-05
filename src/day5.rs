@@ -89,13 +89,16 @@ impl Segment {
             // Diagonal line.
             // An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
             // An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
-            println!("{:?}", self);
+            // println!("{:?}", self);
             let px = Segment::line(self.start.x, self.end.x);
             let py = Segment::line(self.start.y, self.end.y);
-            println!("px={:?}", px);
-            println!("py={:?}", py);
-            let comb: Vec<_>  = px.iter().zip(py.iter()).collect();
-            println!("{:?}", comb);
+            // println!("px={:?}", px);
+            // println!("py={:?}", py);
+            let comb: Vec<_>  = px
+                .iter()
+                .zip(py.iter())
+                .collect();
+            // println!("{:?}", comb);
             for p in comb {
                 points.push(Point {
                     x: *p.0,
@@ -103,7 +106,7 @@ impl Segment {
                 })
 
             }
-            println!("-->{:?}", points);
+            // println!("-->{:?}", points);
         }
 
         points
