@@ -1,8 +1,9 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
+use std::iter::Map;
 
 use crate::util::read_lines;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Hash)]
 struct Point {
     x: i32,
     y: i32,
@@ -98,9 +99,16 @@ pub fn part1() {
     //     println!("{:?}", line);
     // }
 
-    let overlapping_points: HashSet<Point> = HashSet::new();
+    let mut overlapping_points: HashMap<Point, i32> = HashMap::new();
     for s in lines {
         let points = s.points_on_line();
-        println!("{:?} -> {:?}", s, points);
+        // println!("{:?} -> {:?}", s, points);
+        for p in points {
+            let count = overlapping_points.get(&p).unwrap_or(&1);
+            println!("{:?}", count);
+            overlapping_points.insert(p, count + 1);
+        }
     }
+
+
 }
