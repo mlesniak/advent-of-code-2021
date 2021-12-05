@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::util::read_lines;
 
 #[derive(Debug)]
@@ -34,6 +36,48 @@ impl Segment {
             end:  Point::parse(segments[1]),
         }
     }
+
+    fn points_on_line(self: &Segment) -> Vec<Point> {
+        let mut points = Vec::new();
+
+        if self.start.x == self.end.x {
+            // Vertical line.
+            let ps = Segment::line(self.start.y, self.end.y);
+            for p in ps {
+                points.push(Point {
+                    x: self.start.x,
+                    y: p,
+                })
+            }
+        } else {
+            // Horizontal line.
+            let ps = Segment::line(self.start.x, self.end.x);
+            for p in ps {
+                points.push(Point {
+                    x: p,
+                    y: self.start.y,
+                })
+            }
+        }
+
+        points
+    }
+
+    fn line(x1: i32, x2: i32) -> Vec<i32> {
+        let mut points = Vec::new();
+
+        if x1 < x2 {
+            for i in x1..=x2 {
+                points.push(i);
+            }
+        } else {
+            for i in x2..=x1 {
+                points.push(i);
+            }
+        }
+
+        points
+    }
 }
 
 pub fn part1() {
@@ -50,8 +94,13 @@ pub fn part1() {
         }
     }
 
-    for line in lines {
-        println!("{:?}", line);
+    // for line in lines {
+    //     println!("{:?}", line);
+    // }
+
+    let overlapping_points: HashSet<Point> = HashSet::new();
+    for s in lines {
+        let points = s.points_on_line();
+        println!("{:?} -> {:?}", s, points);
     }
-        
 }
