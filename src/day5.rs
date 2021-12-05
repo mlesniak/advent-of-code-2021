@@ -34,7 +34,7 @@ impl Segment {
         let segments: Vec<_> = line.split(" -> ").collect();
         Segment {
             start: Point::parse(segments[0]),
-            end:  Point::parse(segments[1]),
+            end: Point::parse(segments[1]),
         }
     }
 
@@ -64,6 +64,52 @@ impl Segment {
         points
     }
 
+    fn points_on_line_diagonal(self: &Segment) -> Vec<Point> {
+        let mut points = Vec::new();
+
+        if self.start.x == self.end.x {
+            // Vertical line.
+            let ps = Segment::line(self.start.y, self.end.y);
+            for p in ps {
+                points.push(Point {
+                    x: self.start.x,
+                    y: p,
+                })
+            }
+        } else if self.start.y == self.end.y {
+            // Horizontal line.
+            let ps = Segment::line(self.start.x, self.end.x);
+            for p in ps {
+                points.push(Point {
+                    x: p,
+                    y: self.start.y,
+                })
+            }
+        } else {
+            // Diagonal line.
+            // An entry like 1,1 -> 3,3 covers points 1,1, 2,2, and 3,3.
+            // An entry like 9,7 -> 7,9 covers points 9,7, 8,8, and 7,9.
+            println!("{:?}", self);
+            let px = Segment::line(self.start.x, self.end.x);
+            let py = Segment::line(self.start.y, self.end.y);
+            println!("px={:?}", px);
+            println!("py={:?}", py);
+            let comb: Vec<_>  = px.iter().zip(py.iter()).collect();
+            println!("{:?}", comb);
+            for p in comb {
+                points.push(Point {
+                    x: *p.0,
+                    y: *p.1,
+                })
+
+            }
+            println!("-->{:?}", points);
+        }
+
+        points
+    }
+
+
     fn line(x1: i32, x2: i32) -> Vec<i32> {
         let mut points = Vec::new();
 
@@ -75,6 +121,7 @@ impl Segment {
             for i in x2..=x1 {
                 points.push(i);
             }
+            points.reverse();
         }
 
         points
@@ -118,4 +165,39 @@ pub fn part1() {
         // println!("{:?}", count);
     }
     println!("Solution Day 5 / Part 1: {}", counter);
+}
+
+pub fn part2() {
+    let coordinates = read_lines("day5.txt");
+    // println!("{:?}", coordinates);
+
+    let mut lines = Vec::new();
+    for c in coordinates {
+        let s = Segment::parse(&c);
+        lines.push(s);
+    }
+
+    // for line in lines {
+    //     println!("{:?}", line);
+    // }
+
+    let mut overlapping_points: HashMap<Point, i32> = HashMap::new();
+    for s in lines {
+        let points = s.points_on_line_diagonal();
+        // println!("{:?} -> {:?}", s, points);
+        for p in points {
+            let count = overlapping_points.get(&p).unwrap_or(&0);
+            // println!("{:?}", count);
+            overlapping_points.insert(p, count + 1);
+        }
+    }
+
+    let mut counter = 0;
+    for count in overlapping_points.values() {
+        if count > &1 {
+            counter += 1
+        }
+        // println!("{:?}", count);
+    }
+    println!("Solution Day 5 / Part 2: {}", counter);
 }
