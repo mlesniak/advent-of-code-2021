@@ -83,7 +83,7 @@ impl Segment {
 
 pub fn part1() {
     let coordinates = read_lines("day5.txt");
-    println!("{:?}", coordinates);
+    // println!("{:?}", coordinates);
 
     let mut lines = Vec::new();
     for c in coordinates {
@@ -104,11 +104,18 @@ pub fn part1() {
         let points = s.points_on_line();
         // println!("{:?} -> {:?}", s, points);
         for p in points {
-            let count = overlapping_points.get(&p).unwrap_or(&1);
-            println!("{:?}", count);
+            let count = overlapping_points.get(&p).unwrap_or(&0);
+            // println!("{:?}", count);
             overlapping_points.insert(p, count + 1);
         }
     }
 
-
+    let mut counter = 0;
+    for count in overlapping_points.values() {
+        if count > &1 {
+            counter += 1
+        }
+        // println!("{:?}", count);
+    }
+    println!("Solution Day 5 / Part 1: {}", counter);
 }
