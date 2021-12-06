@@ -5,10 +5,10 @@ use crate::util::read_file;
 pub fn part1() {
     let max_days = 80;
 
-    let mut fishes: Vec<i32> = read_file("day6.txt").split(",").map(|x| x.parse().unwrap()).collect();
+    let mut fishes: Vec<i64> = read_file("day6.txt").split(",").map(|x| x.parse().unwrap()).collect();
     // println!("{:?}", fishes);
 
-    let mut new_fish: Vec<i32> = Vec::new();
+    let mut new_fish: Vec<i64> = Vec::new();
     for day in 0..max_days {
         println!("{}", day);
         // println!("{}: {:?}", day, &fishes);
@@ -30,10 +30,10 @@ pub fn part1() {
 pub fn part2() {
     // Different approach: count number of lanternfish per day in a map, since
     // the single identities are not important.
-    let max_days = 80;
+    let max_days = 256;
     let mut lantern_counter = HashMap::new();
 
-    let fishes: Vec<i32> = read_file("day6.txt").split(",").map(|x| x.parse().unwrap()).collect();
+    let fishes: Vec<i64> = read_file("day6.txt").split(",").map(|x| x.parse().unwrap()).collect();
     for fish in fishes {
         let cur = lantern_counter.get(&fish).unwrap_or(&0);
         lantern_counter.insert(fish, cur + 1);
@@ -42,7 +42,7 @@ pub fn part2() {
     println!("{:?}", lantern_counter);
     for day in 0..max_days {
         // println!("\n===== After {} days: {:?}", day, &lantern_counter);
-        let mut tmp: HashMap<i32, i32> = HashMap::new();
+        let mut tmp: HashMap<i64, i64> = HashMap::new();
         for f in 0..=8 {
             if !lantern_counter.contains_key(&f) {
                 continue
@@ -70,6 +70,6 @@ pub fn part2() {
         lantern_counter = tmp;
     }
 
-    let sum: i32 = lantern_counter.values().sum();
+    let sum: i64 = lantern_counter.values().sum();
     println!("Part 2 = {:?}", sum);
 }
