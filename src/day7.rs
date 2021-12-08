@@ -50,6 +50,7 @@ fn score_increment(input: &Vec<i32>, pos: &i32) -> i32 {
     input.iter().map(|n| sum((n - pos).abs())).sum()
 }
 
+// Use n(n+1)/2 -- still this is fast enough
 fn sum(n: i32) -> i32 {
     (1..=n).sum()
 }
