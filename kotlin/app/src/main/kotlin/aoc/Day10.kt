@@ -52,11 +52,11 @@ class Day10 {
     }
 
     fun part2() {
-        val scores = mutableListOf<Int>()
+        val scores = mutableListOf<Long>()
 
         File("day10.txt").readLines().forEach {
             val stack = computeIncompleteLines(it) ?: return@forEach
-            var lineScore = 0
+            var lineScore = 0L
             for (elem in stack.iterator()) {
                 // println(elem)
                 val elemScore = when (elem) {
