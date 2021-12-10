@@ -56,10 +56,9 @@ class Day10 {
 
         File("day10.txt").readLines().forEach {
             val stack = computeIncompleteLines(it) ?: return@forEach
-            println(stack)
             var lineScore = 0
             for (elem in stack.iterator()) {
-                println(elem)
+                // println(elem)
                 val elemScore = when (elem) {
                     '(' -> 1
                     '[' -> 2
@@ -69,10 +68,12 @@ class Day10 {
                 }
                 lineScore = lineScore * 5 + elemScore
             }
+            println("  $stack -> $lineScore")
             scores.add(lineScore)
         }
 
         scores.sort()
+        println("${scores.size} / $scores")
         val result = scores.get(scores.size / 2)
         println("[Day 10|Part1] = $result")
     }
