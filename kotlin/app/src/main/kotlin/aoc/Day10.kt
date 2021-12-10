@@ -50,4 +50,56 @@ class Day10 {
 
         return null
     }
+
+    fun part2() {
+        val scores = mutableListOf<Int>()
+
+        File("day10.txt").readLines().forEach {
+            val stack = computeIncompleteLines(it) ?: return@forEach
+            println(stack)
+            var lineScore = 0
+            for (elem in stack.iterator()) {
+                println(elem)
+                val elemScore = when (elem) {
+                    '(' -> 1
+                    '[' -> 2
+                    '{' -> 3
+                    '<' -> 4
+                    else -> throw IllegalStateException("Unknown element $elem")
+                }
+                lineScore = lineScore * 5 + elemScore
+            }
+            scores.add(lineScore)
+        }
+
+        scores.sort()
+        val result = scores.get(scores.size / 2)
+        println("[Day 10|Part1] = $result")
+    }
+
+    private fun computeIncompleteLines(line: String): ArrayDeque<Char>? {
+        val stack = ArrayDeque<Char>()
+
+        for (c in line) {
+            // println("  ...$c")
+            when (c) {
+                '(', '[', '{', '<' -> stack.addFirst(c)
+                ')', ']', '}', '>' -> {
+                    val expected = stack.removeFirst()
+                    val matching = when (c) {
+                        ')' -> expected == '('
+                        ']' -> expected == '['
+                        '}' -> expected == '{'
+                        '>' -> expected == '<'
+                        else -> throw IllegalStateException("Unknown char $c")
+                    }
+                    if (!matching) {
+                        return null
+                    }
+                }
+            }
+        }
+
+        return stack
+    }
 }
