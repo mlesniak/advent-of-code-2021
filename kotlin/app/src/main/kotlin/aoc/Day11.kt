@@ -3,7 +3,9 @@ package aoc
 class Day11 {
     fun part1() {
         var current = readGrid("day11.txt") { it }
-        val max_step = 3
+        val max_step = 100
+
+        var numFlashes = 0
 
         println("Before any steps:")
         current.debug()
@@ -27,6 +29,7 @@ class Day11 {
                 current.forEach { x, y, v ->
                     if (v >= 10) {
                         flashed = true
+                        numFlashes++
                         flashedCoords.add(Point(x, y))
                         current.neighbors(x, y) { nx, ny, nv ->
                             if (nv < 10) {
@@ -46,17 +49,12 @@ class Day11 {
                     }
                 }
             } while (flashed)
-            // current = current.map { x, y, v ->
-            //     if (flashedCoords.contains(Point(x, y))) {
-            //         0
-            //     } else {
-            //         v
-            //     }
-            // }
 
             println("\nAfter step $step:")
             current.debug()
         }
+
+        println(numFlashes)
     }
 }
 

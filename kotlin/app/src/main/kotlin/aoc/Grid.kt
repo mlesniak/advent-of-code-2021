@@ -8,7 +8,7 @@ typealias Grid<T> = Array<Array<T>>
 
 fun <T> Grid<T>.debug() {
     forEach { row ->
-        println(row.joinToString(","))
+        println(row.joinToString(""))
     }
 }
 
