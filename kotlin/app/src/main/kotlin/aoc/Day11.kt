@@ -9,21 +9,53 @@ class Day11 {
         current.debug()
 
         for (step in 1..max_step) {
-            val next = current.map { x, y, v ->
-                // println("$x,$y <- $v")
-                var flush = 0
-                current.neighbors(x, y) { nx, ny, v ->
-                    // println("  $nx, $ny: $v")
-                    if (v >= 9) {
-                        flush++
+            println("\n === step=$step")
+
+            // First, the energy level of each octopus increases by 1.
+            current = current.map { _, _, v -> v + 1 }
+
+            // Then, any octopus with an energy level greater than 9 flashes.
+            var flashed = false
+            val flashedCoords = mutableListOf<Point>()
+            do {
+                flashed = false
+                // println("DEBUG/current=")
+                // current.debug()
+                // println("----")
+
+                val tmp = current.copy()
+                current.forEach { x, y, v ->
+                    if (v >= 10) {
+                        flashed = true
+                        flashedCoords.add(Point(x, y))
+                        current.neighbors(x, y) { nx, ny, nv ->
+                            if (nv < 10) {
+                                tmp[ny][nx] = tmp[ny][nx] + 1
+                            }
+                        }
+                        tmp[y][x] = 0
+                    }
+                    v
+                }
+                current = tmp
+                current =current.map { x, y, v ->
+                    if (flashedCoords.contains(Point(x, y))) {
+                        0
+                    } else {
+                        v
                     }
                 }
-                if (v >= 9) 0 else (v + 1 + flush) % 10
-            }
+            } while (flashed)
+            // current = current.map { x, y, v ->
+            //     if (flashedCoords.contains(Point(x, y))) {
+            //         0
+            //     } else {
+            //         v
+            //     }
+            // }
 
-            println("After step $step:")
-            next.debug()
-            current = next
+            println("\nAfter step $step:")
+            current.debug()
         }
     }
 }

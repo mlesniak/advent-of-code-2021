@@ -8,14 +8,14 @@ typealias Grid<T> = Array<Array<T>>
 
 fun <T> Grid<T>.debug() {
     forEach { row ->
-        println(row.joinToString(""))
+        println(row.joinToString(","))
     }
 }
 
 inline fun <reified T> Grid<T>.copy(): Grid<T> {
     val rows = mutableListOf<Array<T>>()
     forEach { row ->
-        val copy = row.copyOf()
+        val copy = row.map { it }.toTypedArray()
         rows.add(copy)
     }
 
