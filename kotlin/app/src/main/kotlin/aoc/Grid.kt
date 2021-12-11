@@ -20,10 +20,15 @@ inline fun <reified T> Grid<T>.copy(): Grid<T> {
     return rows.toTypedArray()
 }
 
-fun readGrid(filename: String): Grid<Int> {
-    val rows = mutableListOf<Array<Int>>()
+inline fun <reified T> readGrid(
+    filename: String,
+    convert: (Int) -> T
+): Grid<T> {
+    val rows = mutableListOf<Array<T>>()
     File(filename).readLines().forEach { line ->
-        val cols = line.map { c -> c.toString().toInt() }.toTypedArray()
+        val cols = line.map { c ->
+            convert(c.toString().toInt())
+        }.toTypedArray()
         rows.add(cols)
     }
     return rows.toTypedArray()

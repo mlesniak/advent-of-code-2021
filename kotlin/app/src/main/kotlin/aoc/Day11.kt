@@ -2,7 +2,7 @@ package aoc
 
 class Day11 {
     fun part1() {
-        val current = readGrid("day11.txt")
+        val current = readGrid("day11.txt") { it }
         current.debug()
 
         // Increase
