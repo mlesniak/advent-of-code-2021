@@ -3,7 +3,7 @@ package aoc
 class Day11 {
     fun part1() {
         var current = readGrid("day11.txt") { it }
-        val max_step = 100
+        val max_step = 10000
 
         var numFlashes = 0
 
@@ -52,6 +52,19 @@ class Day11 {
 
             println("\nAfter step $step:")
             current.debug()
+
+            // Part 2
+            var allZero = true
+            current.map { _, _, v ->
+                if (v != 0) {
+                    allZero = false
+                }
+                v
+            }
+            if (allZero) {
+                println("Synchronized")
+                break
+            }
         }
 
         println(numFlashes)
