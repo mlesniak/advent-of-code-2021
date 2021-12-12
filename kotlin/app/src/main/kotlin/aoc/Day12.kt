@@ -29,9 +29,7 @@ class Day12 {
             val res = mutableListOf<Path>()
             paths[lastCave]?.forEach {
                 val n = path.add(it)
-                if (n != null) {
-                    res += n
-                }
+                res += n
             }
             return res
         }
@@ -43,10 +41,10 @@ class Day12 {
         }
 
         // TODO(mlesniak) Bad interface
-        fun add(next: String): Path? {
+        fun add(next: String): List<Path> {
             // println("for caves=$caves and visited=$visited trying to add $next")
             if (visited.contains(next)) {
-                return null
+                return emptyList()
             }
             val nextPath = listOf(*caves.toTypedArray(), next)
             val tmp = mutableSetOf<String>()
@@ -54,7 +52,7 @@ class Day12 {
             if (next.lowercase() == next) {
                 tmp.add(next)
             }
-            return Path(caves = nextPath, visited = tmp)
+            return listOf(Path(caves = nextPath, visited = tmp))
         }
 
         fun last(): String = caves.last()
