@@ -96,5 +96,6 @@ class Day12 {
         finishedPaths.forEach {
             println(it.caves)
         }
+        println(finishedPaths.size)
     }
 }
