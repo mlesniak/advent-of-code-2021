@@ -35,23 +35,31 @@ class Day12 {
         }
     }
 
-    data class Path(val caves: List<String>, val visited: MutableSet<String> = mutableSetOf()) {
+    data class Path(val caves: List<String>, val visited: MutableList<String> = mutableListOf()) {
         constructor(start: String) : this(mutableListOf(start)) {
             visited.add(start)
         }
 
         // TODO(mlesniak) Bad interface
         fun add(next: String): List<Path> {
-            // println("for caves=$caves and visited=$visited trying to add $next")
-            if (visited.contains(next)) {
+            if (next == "start") {
+                return emptyList()
+            }
+            println("for caves=$caves and visited=$visited trying to add $next")
+
+            val alreadyDuplicated = visited.groupBy { it }.mapValues { e -> e.value.size }.values.filter { it > 1 }.isNotEmpty()
+            println("   alreadyDuplicated=$alreadyDuplicated")
+            if (alreadyDuplicated && visited.contains(next)) {
                 return emptyList()
             }
             val nextPath = listOf(*caves.toTypedArray(), next)
-            val tmp = mutableSetOf<String>()
+
+            val tmp = mutableListOf<String>()
             visited.forEach { tmp.add(it) }
             if (next.lowercase() == next) {
                 tmp.add(next)
             }
+
             return listOf(Path(caves = nextPath, visited = tmp))
         }
 
@@ -92,7 +100,7 @@ class Day12 {
         }
 
         finishedPaths.forEach {
-            println(it.caves)
+            println(it.caves.joinToString(","))
         }
         println(finishedPaths.size)
     }
