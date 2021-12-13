@@ -14,14 +14,19 @@ data class Point(val x: Int, val y: Int) {
     }
 }
 
+// TODO(mlesniak) Proper class instead of alias
 typealias Grid<T> = Array<Array<T>>
 
+// fun <T> Grid<T>.debug() {
+//     forEach { row ->
+//         println(row.joinToString(""))
+//     }
+// }
 
-fun <T> Grid<T>.debug() {
-    forEach { row ->
-        println(row.joinToString(""))
-    }
-}
+// Property not possible
+fun <T> Grid<T>.width(): Int = this[0].size
+
+fun <T> Grid<T>.height(): Int = this.size
 
 inline fun <reified T> Grid<T>.copy(): Grid<T> {
     val rows = mutableListOf<Array<T>>()
@@ -47,11 +52,20 @@ inline fun <reified T> readGrid(
     return rows.toTypedArray()
 }
 
-fun <T> Grid<T>.forEach(f: (x: Int, y: Int, v: T) -> T) {
+fun <T> Grid<T>.inlineMap(f: (x: Int, y: Int, v: T) -> T) {
     indices.forEach { y ->
         get(y).indices.forEach { x ->
             val v = get(y)[x]
             get(y)[x] = f(x, y, v)
+        }
+    }
+}
+
+fun <T> Grid<T>.forEach(f: (x: Int, y: Int, v: T) -> Unit) {
+    indices.forEach { y ->
+        get(y).indices.forEach { x ->
+            val v = get(y)[x]
+            f(x, y, v)
         }
     }
 }

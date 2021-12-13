@@ -1,21 +1,17 @@
 package aoc
 
-fun <T> debug(c: Collection<T>) {
-    for (elem in c) {
+fun <T> Collection<T>.debug() {
+    for (elem in this) {
         println(elem)
     }
 }
 
-fun <T> debug(grid: Grid<T>) {
-    for (row in grid) {
+fun <T> Grid<T>.debug() {
+    for (row in this) {
         println(row.joinToString(""))
     }
 }
 
-fun panic(msg: String) {
-    throw IllegalStateException("PANIC: $msg")
-}
-
-fun debug(a: Any) {
-    println(a)
+fun Any.debug() {
+    println(this)
 }

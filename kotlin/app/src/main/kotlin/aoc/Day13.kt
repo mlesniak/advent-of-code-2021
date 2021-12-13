@@ -40,12 +40,48 @@ class Day13 {
 
         val width: Int = dots.maxOfOrNull { it.x + 1 } ?: throw IllegalStateException("No elements")
         val height: Int = dots.maxOfOrNull { it.y + 1 } ?: throw IllegalStateException("No elements")
-        val grid = Array(height) { Array(width) { '.' } }
+        val grid: Grid<Char> = createGrid(width, height)
         for (p in dots) {
             grid[p.y][p.x] = '#'
         }
-        debug(grid)
-        debug(folds)
+        // grid.debug()
+        // folds.debug()
+
+        val result = fold(grid, folds[0])
+        // result.debug()
+        var count = 0
+        result.forEach { _, _, v ->
+            if (v == '#') {
+                count++
+            }
+        }
+        println("Day13/Part 1 = $count")
+    }
+
+    private fun createGrid(width: Int, height: Int) = Array(height) { Array(width) { '.' } }
+
+    private fun fold(grid: Grid<Char>, fold: Day13.Fold): Grid<Char> {
+        lateinit var res: Grid<Char>
+        when (fold.type) {
+            FoldType.HORIZONTAL -> {
+                res = createGrid(grid.width(), grid.height() / 2)
+                grid.forEach { x, y, v ->
+                    if (v == '.') {
+                        return@forEach
+                    }
+                    if (y < fold.position) {
+                        res[y][x] = v
+                    } else {
+                        // println("x=$x, y=$y")
+                        val delta = y - fold.position
+                        res[fold.position - delta][x] = v
+                    }
+                }
+            }
+            FoldType.VERTICAL -> res = createGrid(grid.width() / 2, grid.height())
+        }
+
+        return res
     }
 }
 

@@ -26,7 +26,7 @@ class Day11 {
                 // println("----")
 
                 val tmp = current.copy()
-                current.forEach { x, y, v ->
+                current.inlineMap { x, y, v ->
                     if (v >= 10) {
                         flashed = true
                         numFlashes++
