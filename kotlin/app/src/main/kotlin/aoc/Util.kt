@@ -16,3 +16,6 @@ fun panic(msg: String) {
     throw IllegalStateException("PANIC: $msg")
 }
 
+fun debug(a: Any) {
+    println(a)
+}
