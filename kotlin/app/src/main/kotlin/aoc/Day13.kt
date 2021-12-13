@@ -11,6 +11,7 @@ class Day13 {
     data class Fold(val position: Int, val type: FoldType) {
         companion object {
             fun parse(line: String): Fold {
+                println(line)
                 val fold = line.split(" ")[2].split("=")
                 return Fold(
                     position = fold[1].toInt(),
@@ -78,7 +79,21 @@ class Day13 {
                     }
                 }
             }
-            FoldType.VERTICAL -> res = createGrid(grid.width() / 2, grid.height())
+            FoldType.VERTICAL -> {
+                res = createGrid(grid.width() / 2, grid.height())
+                grid.forEach { x, y, v ->
+                    if (v == '.') {
+                        return@forEach
+                    }
+                    if (x < fold.position) {
+                        res[y][x] = v
+                    } else {
+                        val delta = x - fold.position
+                        res[y][fold.position - delta] = v
+                    }
+                }
+
+            }
         }
 
         return res
