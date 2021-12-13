@@ -11,7 +11,6 @@ class Day13 {
     data class Fold(val position: Int, val type: FoldType) {
         companion object {
             fun parse(line: String): Fold {
-                println(line)
                 val fold = line.split(" ")[2].split("=")
                 return Fold(
                     position = fold[1].toInt(),
@@ -41,22 +40,28 @@ class Day13 {
 
         val width: Int = dots.maxOfOrNull { it.x + 1 } ?: throw IllegalStateException("No elements")
         val height: Int = dots.maxOfOrNull { it.y + 1 } ?: throw IllegalStateException("No elements")
-        val grid: Grid<Char> = createGrid(width, height)
+        var grid: Grid<Char> = createGrid(width, height)
         for (p in dots) {
             grid[p.y][p.x] = '#'
         }
         // grid.debug()
         // folds.debug()
 
-        val result = fold(grid, folds[0])
-        // result.debug()
-        var count = 0
-        result.forEach { _, _, v ->
-            if (v == '#') {
-                count++
-            }
+        for (fold in folds) {
+            val result = fold(grid, fold)
+            grid = result
         }
-        println("Day13/Part 1 = $count")
+        grid.debug()
+
+        // val result = fold(grid, folds[0])
+        // // result.debug()
+        // var count = 0
+        // result.forEach { _, _, v ->
+        //     if (v == '#') {
+        //         count++
+        //     }
+        // }
+        // println("Day13/Part 1 = $count")
     }
 
     private fun createGrid(width: Int, height: Int) = Array(height) { Array(width) { '.' } }
