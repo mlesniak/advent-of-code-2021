@@ -2,9 +2,20 @@ package aoc
 
 import java.io.File
 
-data class Point(val x: Int, val y: Int)
+data class Point(val x: Int, val y: Int) {
+    companion object {
+        fun parse(value: String): Point {
+            val parts = value.trim().split(",")
+            return Point(
+                x = parts[0].toInt(),
+                y = parts[1].toInt()
+            )
+        }
+    }
+}
 
 typealias Grid<T> = Array<Array<T>>
+
 
 fun <T> Grid<T>.debug() {
     forEach { row ->
@@ -61,12 +72,12 @@ inline fun <reified T> Grid<T>.map(f: (x: Int, y: Int, v: T) -> T): Grid<T> {
     return rows.toTypedArray()
 }
 
-fun <T> Grid<T>.neighbors(x: Int, y:Int, f: (x: Int, y: Int, value: T) -> Unit) {
+fun <T> Grid<T>.neighbors(x: Int, y: Int, f: (x: Int, y: Int, value: T) -> Unit) {
     for (dy in -1..1) {
         for (dx in -1..1) {
             val nx = x + dx
             val ny = y + dy
-            if (dx== 0 && dy == 0) {
+            if (dx == 0 && dy == 0) {
                 continue
             }
             if (nx < 0 || ny < 0) {
