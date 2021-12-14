@@ -54,9 +54,9 @@ class Day14 {
         // rules.debug()
 
         var state = toMap(start)
-        state.debug()
+        // state.debug()
 
-        val maxSteps = 10
+        val maxSteps = 40
         for (step in 1..maxSteps) {
             println("\n===Step $step")
             state = stepState(rules, state)
@@ -68,19 +68,18 @@ class Day14 {
         //     NBCCNBBBCBHCB
         // toMap("NBBBCNCCNBBNBNBBCHBHHBCHB").debug()
 
-
-        state.debug()
+        // state.debug()
         // +1 due to pair-based approach
-        state.values.sum().debug("Summed length")
+        // state.values.sum().debug("Summed length")
         val counts = mutableMapOf<Char, Long>()
         for (entry in state) {
             counts[entry.key[0]] = counts.getOrDefault(entry.key[0], 0) + entry.value
             counts[entry.key[1]] = counts.getOrDefault(entry.key[1], 0) + entry.value
         }
 
-        println()
-        counts.debug()
-        val sizes = counts.values.map {it/2}
+        // println()
+        // counts.debug()
+        val sizes = counts.values.map { it / 2 }
         val result = sizes.maxOrNull()!! - sizes.minOrNull()!! + 1
         println("\n\nPart 2 = $result")
     }
@@ -97,15 +96,15 @@ class Day14 {
         val res = mutableMapOf<String, Long>()
 
         state.keys.forEach { pair ->
-            repeat(state[pair]!!.toInt()) {
-                // println("PAIR=$pair")
-                val match = rules[pair]
-                // println("  MATCH=$match")
-                // println("  Creating ${pair[0]}$match")
-                // println("  Creating $match${pair[1]}")
-                res["${pair[0]}$match"] = (res["${pair[0]}$match"] ?: 0) + 1
-                res["$match${pair[1]}"] = (res["$match${pair[1]}"] ?: 0) + 1
-            }
+            // repeat(state[pair]!!.toInt()) {
+            // println("PAIR=$pair")
+            val match = rules[pair]
+            // println("  MATCH=$match")
+            // println("  Creating ${pair[0]}$match")
+            // println("  Creating $match${pair[1]}")
+            res["${pair[0]}$match"] = (res["${pair[0]}$match"] ?: 0) + state[pair]!!
+            res["$match${pair[1]}"] = (res["$match${pair[1]}"] ?: 0) + state[pair]!!
+            // }
         }
 
         return res
