@@ -14,17 +14,19 @@ class Day14 {
         // start.debug()
         rules.debug()
 
-        val maxSteps = 4
+        val maxSteps = 10
         var state = start
         println()
         state.debug()
         for (step in 1..maxSteps) {
-            println("=== Step $step")
+            // println("=== Step $step")
             state = step(rules, state)
-            state.debug()
+            // state.debug()
         }
 
-        println("NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB")
+        val sizes = state.groupBy { it }.map{ it.value.size}
+        val result = sizes.maxOrNull()!! - sizes.minOrNull()!!
+        println("Part 1 = $result")
     }
 
     private fun step(rules: Map<String, String>, state: String): String {
