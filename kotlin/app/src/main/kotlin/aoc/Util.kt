@@ -6,6 +6,13 @@ fun <T> Collection<T>.debug() {
     }
 }
 
+fun <T, V> Map<T, V>.debug() {
+    for (elem in this) {
+        println(elem)
+    }
+}
+
+
 fun <T> Grid<T>.debug() {
     for (row in this) {
         println(row.joinToString(""))
