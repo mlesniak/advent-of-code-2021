@@ -72,7 +72,7 @@ class Day14 {
         state.debug()
         // +1 due to pair-based approach
         state.values.sum().debug("Summed length")
-        val counts = mutableMapOf<Char, Int>()
+        val counts = mutableMapOf<Char, Long>()
         for (entry in state) {
             counts[entry.key[0]] = counts.getOrDefault(entry.key[0], 0) + entry.value
             counts[entry.key[1]] = counts.getOrDefault(entry.key[1], 0) + entry.value
@@ -85,19 +85,19 @@ class Day14 {
         println("\n\nPart 2 = $result")
     }
 
-    private fun toMap(start: String): MutableMap<String, Int> {
-        val state = mutableMapOf<String, Int>()
+    private fun toMap(start: String): MutableMap<String, Long> {
+        val state = mutableMapOf<String, Long>()
         for (idx in 0..start.length - 2) {
             state[start.substring(idx, idx + 2)] = (state[start.substring(idx, idx + 2)] ?: 0) + 1
         }
         return state
     }
 
-    private fun stepState(rules: MutableMap<String, String>, state: MutableMap<String, Int>): MutableMap<String, Int> {
-        val res = mutableMapOf<String, Int>()
+    private fun stepState(rules: MutableMap<String, String>, state: MutableMap<String, Long>): MutableMap<String, Long> {
+        val res = mutableMapOf<String, Long>()
 
         state.keys.forEach { pair ->
-            repeat(state[pair]!!) {
+            repeat(state[pair]!!.toInt()) {
                 // println("PAIR=$pair")
                 val match = rules[pair]
                 // println("  MATCH=$match")
