@@ -19,6 +19,9 @@ fun <T> Grid<T>.debug() {
     }
 }
 
-fun Any.debug() {
+fun Any.debug(desc: String? = null) {
+    if (desc != null) {
+        print("$desc: ")
+    }
     println(this)
 }
