@@ -1,6 +1,7 @@
 package aoc
 
 import java.io.File
+import kotlin.math.absoluteValue
 
 data class Point(val x: Int, val y: Int) {
     companion object {
@@ -40,7 +41,7 @@ inline fun <reified T> Grid<T>.copy(): Grid<T> {
 
 inline fun <reified T> readGrid(
     filename: String,
-    convert: (Int) -> T
+    convert: (Int) -> T = {it as T}
 ): Grid<T> {
     val rows = mutableListOf<Array<T>>()
     File(filename).readLines().forEach { line ->
@@ -94,6 +95,12 @@ fun <T> Grid<T>.neighbors(x: Int, y: Int, f: (x: Int, y: Int, value: T) -> Unit)
             if (dx == 0 && dy == 0) {
                 continue
             }
+
+            //No diagonal movements
+            if (dx.absoluteValue + dy.absoluteValue == 2) {
+                continue
+            }
+
             if (nx < 0 || ny < 0) {
                 continue
             }
