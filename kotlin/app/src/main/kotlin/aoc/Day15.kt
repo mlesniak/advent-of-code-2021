@@ -3,7 +3,7 @@ package aoc
 class Day15 {
     // Dijkstra
     fun part1() {
-        val map: Grid<Int> = readGrid("day15.txt")
+        var map: Grid<Int> = readGrid("day15.txt")
 
 
         // 1163751742 2274862853 3385973964 4496184175 5517295286
@@ -29,6 +29,7 @@ class Day15 {
                 }
             }
         }
+        map = input
         // input.debug()
         // return
 
