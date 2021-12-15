@@ -5,7 +5,7 @@ class Day15 {
 
     fun part1() {
         val map: Grid<Int> = readGrid("day15.txt")
-        map.debug()
+        // map.debug()
 
         val paths = mutableListOf<Path>()
         val start = Path(
@@ -32,6 +32,7 @@ class Day15 {
             }
 
             // println("= Examining $current")
+            val nexts = mutableListOf<Path>()
             map.neighbors(last.x, last.y) { nx, ny, risk ->
                 if (current.risk + risk >= minRisk) {
                     return@neighbors
@@ -46,8 +47,13 @@ class Day15 {
                     current.path + next,
                     current.risk + risk
                 )
-                paths += nextPath
+                nexts += nextPath
             }
+
+            // Sort by lowest risk
+            nexts.sortBy { it.risk }
+            nexts.reverse()
+            paths += nexts
 
             // readLine()
         }
