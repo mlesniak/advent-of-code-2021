@@ -1,5 +1,7 @@
 package aoc
 
+import java.util.*
+
 class Day15 {
     // Dijkstra
     fun part1() {
@@ -34,7 +36,10 @@ class Day15 {
         // return
 
         val risks = mutableMapOf<Point, Int>()
-        val unvisitedNodes = mutableSetOf<Point>()
+        // val unvisitedNodes = mutableSetOf<Point>()
+
+        val compareByRisk: Comparator<Point> = compareBy { risks[it] }
+        val unvisitedNodes = PriorityQueue(compareByRisk)
         for (y in map.indices) {
             for (x in 0 until map[0].size) {
                 val initialScore =
@@ -51,17 +56,23 @@ class Day15 {
 
         val now = System.currentTimeMillis()
         while (unvisitedNodes.isNotEmpty()) {
+            val s = unvisitedNodes.size
+            if (s % 1_000 == 0) {
+                println(s)
+            }
+
             // println()
             // Find the smallest one -- use better data structure if too slow.
-            var current = unvisitedNodes.iterator().next()
-            var minRisk = Int.MAX_VALUE
-            unvisitedNodes.forEach { node ->
-                val nodeRisk = risks[node]!!
-                if (nodeRisk < minRisk) {
-                    minRisk = nodeRisk
-                    current = node
-                }
-            }
+            var current = unvisitedNodes.remove()
+            var minRisk = risks[current]!!
+            // var minRisk = Int.MAX_VALUE
+            // unvisitedNodes.forEach { node ->
+            //     val nodeRisk = risks[node]!!
+            //     if (nodeRisk < minRisk) {
+            //         minRisk = nodeRisk
+            //         current = node
+            //     }
+            // }
             // println("current=$current risk=$minRisk")
 
             map.neighbors(current.x, current.y) { nx, ny, v ->
@@ -75,8 +86,10 @@ class Day15 {
                 if (thisScore < curScore) {
                     risks[point] = thisScore
                 }
+                unvisitedNodes -= point
+                unvisitedNodes += point
             }
-            unvisitedNodes.remove(current)
+            // unvisitedNodes.remove(current)
             // unvisitedNodes.sortBy { risks[it] }
             // readLine()
         }
