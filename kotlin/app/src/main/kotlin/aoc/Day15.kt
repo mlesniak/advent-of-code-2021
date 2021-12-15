@@ -35,11 +35,14 @@ class Day15 {
         val rand = Random(0)
 
         while (paths.isNotEmpty()) {
+            // println("\n\nIteration")
+            // paths.forEach { println("  * $it") }
+
             val current = paths.removeAt(paths.size - 1)
             if (rand.nextDouble() < 0.001) {
                 val avg = paths.map { it.risk }.sum() / paths.size
                 println("${paths.size} and minRisk=$minRisk, avg=$avg")
-                println("${paths.map{it.risk}}")
+                // println("${paths.map{it.risk}}")
             }
 
             val last = current.path.last()
@@ -48,7 +51,7 @@ class Day15 {
             val nexts = mutableListOf<Path>()
             map.neighbors(last.x, last.y) { nx, ny, risk ->
                 if (Point(nx, ny) == goal) {
-                    println("*** Found path $current")
+                    println("*** Found path $current.risk")
 
                     // Prune tree
                     minRisk = current.risk + risk
@@ -74,13 +77,21 @@ class Day15 {
                 )
                 nexts += nextPath
             }
+            if (nexts.isEmpty()) {
+                continue
+            }
 
             // Sort by lowest risk
             nexts.sortBy { it.risk }
             nexts.reverse()
+            // println("Choosing nexts:")
+            // nexts.forEach { println("  $it") }
             paths += nexts
 
-
+            paths.sortBy {
+                it.path.size / it.risk
+            }
+            paths.reverse()
 
             // readLine()
         }
