@@ -7,7 +7,7 @@ class Day15 {
 
         val risks = mutableMapOf<Point, Int>()
         val unvisitedNodes = mutableSetOf<Point>()
-        for (y in 0 until map.size) {
+        for (y in map.indices) {
             for (x in 0 until map[0].size) {
                 val initialScore =
                     if (x == 0 && y == 0) {
@@ -21,6 +21,7 @@ class Day15 {
         }
         // unvisitedNodes.debug()
 
+        val now = System.currentTimeMillis()
         while (unvisitedNodes.isNotEmpty()) {
             // println()
             // Find the smallest one -- use better data structure if too slow.
@@ -48,11 +49,14 @@ class Day15 {
                 }
             }
             unvisitedNodes.remove(current)
+            // unvisitedNodes.sortBy { risks[it] }
             // readLine()
         }
 
         val goal = Point(map.width() - 1, map.height() - 1)
         val goalScore = risks[goal]
         println("Score for $goal=$goalScore")
+
+        println("${System.currentTimeMillis() - now}")
     }
 }
