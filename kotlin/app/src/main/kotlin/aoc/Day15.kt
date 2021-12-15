@@ -5,6 +5,33 @@ class Day15 {
     fun part1() {
         val map: Grid<Int> = readGrid("day15.txt")
 
+
+        // 1163751742 2274862853 3385973964 4496184175 5517295286
+        // 1163751742 2274862853 3385973964 4496184175 5517295286
+
+        // We could do some modulo magic to compute the neighbor risks
+        // on the fly (maybe), but let's be pragmatic here and simply
+        // create a large area.
+        val factor = 5
+        val input: Array<Array<Int>> = Array(map.height() * factor) {
+            Array(map.width() * factor) { 0 }
+        }
+        for (ytile in 0 until factor) {
+            for (xtile in 0 until factor) {
+                for (y in map.indices) {
+                    for (x in 0 until map[0].size) {
+                        var v = map[y][x] + xtile + ytile
+                        if (v > 9) {
+                            v = v % 10 + 1
+                        }
+                        input[map.height() * ytile + y][map.width()*xtile + x] = v
+                    }
+                }
+            }
+        }
+        // input.debug()
+        // return
+
         val risks = mutableMapOf<Point, Int>()
         val unvisitedNodes = mutableSetOf<Point>()
         for (y in map.indices) {
@@ -39,7 +66,7 @@ class Day15 {
             map.neighbors(current.x, current.y) { nx, ny, v ->
                 val point = Point(nx, ny)
                 if (point !in unvisitedNodes) {
-                   return@neighbors
+                    return@neighbors
                 }
 
                 val thisScore = minRisk + v
