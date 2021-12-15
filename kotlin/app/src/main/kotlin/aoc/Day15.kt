@@ -15,25 +15,28 @@ class Day15 {
         paths += start
 
         var minRisk = Int.MAX_VALUE
+        val goal = Point(map.width() - 1, map.height() - 1)
+
         while (paths.isNotEmpty()) {
             val current = paths.removeAt(paths.size - 1)
 
             val last = current.path.last()
-            if (last == Point(map.width() - 1, map.height() - 1)) {
-                println("*** Found path $current")
-
-                // Prune tree
-                minRisk = current.risk
-                val before = paths.size
-                paths.removeIf { it.risk >= minRisk}
-                println("- Pruned ${before - paths.size}")
-
-                continue
-            }
 
             // println("= Examining $current")
             val nexts = mutableListOf<Path>()
             map.neighbors(last.x, last.y) { nx, ny, risk ->
+                if (Point(nx, ny) == goal) {
+                    println("*** Found path $current")
+
+                    // Prune tree
+                    minRisk = current.risk + risk
+                    val before = paths.size
+                    paths.removeIf { it.risk >= minRisk}
+                    println("- Pruned ${before - paths.size}")
+                    return@neighbors
+                }
+
+
                 if (current.risk + risk >= minRisk) {
                     return@neighbors
                 }
