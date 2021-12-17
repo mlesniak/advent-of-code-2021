@@ -24,7 +24,7 @@ class Day16 {
 
     class LiteralValue(
         override val version: Int,
-        val value: Int
+        val value: Long
     ) : BasePacket(version, 4, emptyList()) {
         override fun toString(): String {
             return "LiteralValue(version=$version, value=$value)"
@@ -85,7 +85,8 @@ class Day16 {
                     binaryNumber += s.substring(1)
                     index += 5
                 }
-                val number = binaryNumber.toInt(2)
+                println("* Trying to parse $binaryNumber")
+                val number = binaryNumber.toLong(2)
                 val literalValue = LiteralValue(version, number)
                 literalValue.debug()
                 return ParseResult(literalValue, index)
