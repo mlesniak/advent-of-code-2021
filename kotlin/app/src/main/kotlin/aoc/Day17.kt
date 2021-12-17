@@ -7,20 +7,22 @@ class Day17 {
     }
 
     fun part1() {
-        val target = Area(144, -100, 178, -76)
-        // val target = Area(20, -10, 30, -5)
+        // val target = Area(144, -100, 178, -76)
+        val target = Area(20, -10, 30, -5)
 
         simulate(Point(0,0), Point(6,9), 50, target)
 
+        var counter = 0
         val hits = mutableListOf<Result>()
-        for (x in 0..1000) {
+        for (x in 0..100) {
             println("$x")
-            for (y in 0..1000) {
+            for (y in -100..100) {
                 // println("x=$x,y=$y")
                 val start = Point(0, 0)
                 val velocity = Point(x, y)
                 val hit = simulate(start, velocity, 1000, target)
                 if (hit.hit) {
+                    counter++
                     hits += hit
                 }
             }
@@ -28,6 +30,7 @@ class Day17 {
         println("$hits")
         val maxY = hits.maxOf { it.maxY }
         println("maxY=$maxY")
+        println("counter=$counter")
     }
 
     data class Result(val hit: Boolean, val maxY: Int)
