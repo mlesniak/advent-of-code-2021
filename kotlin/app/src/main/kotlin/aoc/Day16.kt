@@ -3,7 +3,7 @@ package aoc
 import java.io.File
 
 class Day16 {
-    open class BasePacket(
+    abstract class BasePacket(
         open val version: Int,
         open val type: Int,
         open val content: List<BasePacket>
@@ -12,22 +12,28 @@ class Day16 {
             return "BasePacket(version=$version, type=$type, content=$content)"
         }
 
-        fun debug() {
-            println("version=$version, type=$type")
-            content.forEach { it.debug() }
-        }
+        abstract fun debug()
+        // println("version=$version, type=$type")
+        // content.forEach { it.debug() }
+        // }
 
         fun versionSum(): Int {
             return version + content.sumOf { it.versionSum() }
         }
+
+        abstract fun get(): Long
     }
 
     class LiteralValue(
         override val version: Int,
         val value: Long
     ) : BasePacket(version, 4, emptyList()) {
-        override fun toString(): String {
-            return "LiteralValue(version=$version, value=$value)"
+        override fun debug() {
+            println("LiteralValue(version=$version, value=$value)")
+        }
+
+        override fun get(): Long {
+            return value
         }
     }
 
@@ -36,8 +42,49 @@ class Day16 {
         override val type: Int,
         override val content: List<BasePacket>
     ) : BasePacket(version, type, content) {
-        override fun toString(): String {
-            return "Operator(version=$version, type=$type, content=$content)"
+        override fun debug() {
+            println("Operator(version=$version, type=$type")
+            content.forEach { it.debug() }
+        }
+
+        override fun get(): Long {
+            return when (type) {
+                0 -> content.sumOf { it.get() }
+                1 -> {
+                    val l = content.map { it.get() }
+                    l.fold(1L) { a, b -> a * b }
+                }
+                2 -> {
+                    val l = content.map { it.get() }
+                    l.minOrNull()!!
+                }
+                3 -> {
+                    val l = content.map { it.get() }
+                    l.maxOrNull()!!
+                }
+                5 -> {
+                    if (content[0].get() > content[1].get()) {
+                        1
+                    } else {
+                        0
+                    }
+                }
+                6 -> {
+                    if (content[0].get() < content[1].get()) {
+                        1
+                    } else {
+                        0
+                    }
+                }
+                7 -> {
+                    if (content[0].get() == content[1].get()) {
+                        1
+                    } else {
+                        0
+                    }
+                }
+                else -> throw IllegalArgumentException("Unknown type $type")
+            }
         }
     }
 
@@ -57,8 +104,11 @@ class Day16 {
             index += res.nextIndex
         }
 
-        val sum = buckets[0].versionSum()
-        println("sum=$sum")
+        // val sum = buckets[0].versionSum()
+        // println("sum=$sum")
+
+        val res = buckets[0].get()
+        println("res=$res")
 
         // buckets.forEach { println(it) }
     }
