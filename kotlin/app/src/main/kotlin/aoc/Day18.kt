@@ -1,13 +1,9 @@
 package aoc
 
 class Day18 {
-    data class Node(val value: Int?, val left: Node?, val right: Node?) {
-        constructor(left: Int, right: Int) : this(null, Node(left, null, null), Node(right, null, null))
-        constructor(value: Int) : this(value, null, null)
-        constructor(left: Node, right: Node) : this(null, left, right)
-
+    data class Node(var parent: Node?, var value: Int?, var left: Node?, var right: Node?) {
         companion object {
-            fun parse(s: String): Node {
+            fun parse(parent: Node?, s: String): Node {
                 // println("Parsing <$s>")
                 if (s[0] == '[') {
                     val substring = s.substring(1, s.length - 1)
@@ -27,13 +23,18 @@ class Day18 {
                             else -> {} // needed?
                         }
                     }
-                    return Node(
+                    val node = Node(
+                        parent,
                         null,
-                        parse(substring.substring(0,cutIndex)),
-                        parse(substring.substring(cutIndex+1)))
+                        null,
+                        null,
+                    )
+                    node.left = parse(node, substring.substring(0, cutIndex))
+                    node.right = parse(node, substring.substring(cutIndex + 1))
+                    return node
                 } else {
                     val num = s.toInt()
-                    return Node(num, null, null)
+                    return Node(parent, num, null, null)
                 }
             }
         }
@@ -46,26 +47,71 @@ class Day18 {
                 else -> 3 * left?.magnitude()!! + 2 * right?.magnitude()!!
             }
 
-        fun debug() {
-            println(toString())
-        }
-
         override fun toString(): String {
-            return render(0)
-        }
-
-        private fun render(level: Int): String {
-            val sb = StringBuilder()
-            when {
-                leaf() -> sb.append(value)
-                else -> {
-                    val ls = left?.render(level + 1)
-                    val rs = right?.render(level + 1)
-                    sb.append("[${ls},${rs}]")
+            fun render(self: Node, level: Int): String {
+                val sb = StringBuilder()
+                when {
+                    self.leaf() -> sb.append(self.value)
+                    else -> {
+                        val ls = render(self.left!!, level + 1)
+                        val rs = render(self.right!!, level + 1)
+                        sb.append("[${ls},${rs}]")
+                    }
                 }
+
+                return sb.toString()
             }
 
-            return sb.toString()
+            return render(this, 0)
+        }
+
+        data class Result(val node: Node, val stop: Boolean)
+
+        // fun split(): Result {
+        //     if (!leaf()) {
+        //         return Result(this, false)
+        //     }
+        //
+        //     if (value!! <= 9) {
+        //         return Result(this, false)
+        //     }
+        //
+        //     return Result(
+        //         Node(
+        //             null,
+        //             Node(value / 2),
+        //             Node(value / 2 + value % 2)
+        //         ),
+        //         true
+        //     )
+        // }
+
+        fun compute() {
+            compute(0)
+        }
+
+        fun compute(level: Int) {
+            if (leaf()) {
+                println("${" ".repeat(level * 2)}LEAF $value on level $level")
+                return
+            }
+
+            if (level == 4) {
+                println("${" ".repeat(level * 2)}need to explode on level $level")
+            }
+
+            println("${" ".repeat(level * 2)}LEFT")
+            left!!.compute(level + 1)
+
+            println("${" ".repeat(level * 2)}RIGHT")
+            right!!.compute(level + 1)
+        }
+
+        operator fun plus(n2: Node): Node {
+            val node = Node(null, null, this, n2)
+            this.parent = node
+            n2.parent = node
+            return node
         }
     }
 
@@ -73,12 +119,19 @@ class Day18 {
         // val lines = File("day18.txt").readLines()
         // lines.debug()
 
-        // println(Node(9, 1).magnitude())
-        // val node = Node(Node(1, 2), Node(Node(3, 4), Node(5)))
-        // Node.parse("1").debug()
-        val node = Node.parse("[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]")
+        // val n1 = Node.parse("[1,2]")
+        // val n2 = Node.parse("[[3,4],5]")
+        // val node = n1 + n2
+        // val node = Node.parse("[[[[[9,8],1],2],3],4]")
+        val node = Node.parse(null, "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]")
         // val node = Node.parse("[[1,2],[[3,4],5]]")
         node.debug()
-        node.magnitude().debug()
+        node.compute()
+        // node.magnitude().debug()
+
+        // Node(9).split().debug()
+        // Node(10).split().debug()
+        // Node(11).split().debug()
+        // Node(12).split().debug()
     }
 }
