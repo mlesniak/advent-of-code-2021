@@ -86,25 +86,84 @@ class Day18 {
         //     )
         // }
 
-        fun compute() {
-            compute(0)
+        fun explode() {
+            explode(0)
         }
 
-        fun compute(level: Int) {
+        // ... : Continue?
+        fun explode(level: Int): Boolean {
             if (leaf()) {
-                println("${" ".repeat(level * 2)}LEAF $value on level $level")
-                return
+                return true
             }
 
             if (level == 4) {
-                println("${" ".repeat(level * 2)}need to explode on level $level")
+                if (left!!.leaf() && right!!.leaf()) {
+                    addLeft(this.parent, left!!.value!!)
+                    addRight(this, right!!.value!!)
+
+                    left = null
+                    right = null
+                    value = 0
+                }
+                return false
             }
 
-            println("${" ".repeat(level * 2)}LEFT")
-            left!!.compute(level + 1)
+            if (!left!!.explode(level + 1)) {
+                return false
+            }
 
-            println("${" ".repeat(level * 2)}RIGHT")
-            right!!.compute(level + 1)
+            return right!!.explode(level + 1)
+        }
+
+        private fun addLeft(node: Node?, value: Int) {
+            if (node == null) {
+                return
+            }
+            if (node.left!!.leaf()) {
+                node.left!!.value = node.left!!.value!! + value
+                return
+            }
+
+            addLeft(node.parent, value)
+        }
+
+        private fun addRight(node: Node?, value: Int) {
+            println("node=$node")
+            if (node == null) {
+                return
+            }
+
+            // UP
+            var cur: Node? = node
+            while (cur != null && cur!!.right != null && cur.parent != null && cur.parent!!.right === cur) {
+                println("cur=$cur")
+                cur = cur.parent
+            }
+            if (cur!!.parent == null) {
+                // root
+                return
+            }
+            cur = cur.parent!!.right
+            println("top=$cur")
+
+            // DOWN
+            while (true) {
+                println("at $cur")
+                if (cur != null && cur.leaf()) {
+                    cur.value = cur.value!! + value
+                    return
+                }
+
+                if (cur != null && cur.left != null) {
+                    if (cur.left!!.leaf()) {
+                        cur.left!!.value = cur.left!!.value!! + value
+                        return
+                    }
+                    cur = cur!!.left
+                    continue
+                }
+                cur = cur!!.right
+            }
         }
 
         operator fun plus(n2: Node): Node {
@@ -119,19 +178,21 @@ class Day18 {
         // val lines = File("day18.txt").readLines()
         // lines.debug()
 
-        // val n1 = Node.parse("[1,2]")
-        // val n2 = Node.parse("[[3,4],5]")
-        // val node = n1 + n2
-        // val node = Node.parse("[[[[[9,8],1],2],3],4]")
-        val node = Node.parse(null, "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]")
-        // val node = Node.parse("[[1,2],[[3,4],5]]")
-        node.debug()
-        node.compute()
-        // node.magnitude().debug()
+        val node = Node.parse(
+            null,
+            // "[[[[[9,8],1],2],3],4]"
+            // "[7,[6,[5,[4,[3,2]]]]]"
+            // "[[6,[5,[4,[3,2]]]],1]"
+            // "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]"
+            "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]"
+        )
 
-        // Node(9).split().debug()
-        // Node(10).split().debug()
-        // Node(11).split().debug()
-        // Node(12).split().debug()
+        node.debug()
+        println("after 1st explode")
+        node.explode()
+        node.debug()
+        println("\n\nafter 2nd explode")
+        node.explode()
+        node.debug()
     }
 }
