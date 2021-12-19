@@ -32,7 +32,7 @@ class Day13 {
                 continue
             }
             if (parseDots) {
-                dots += Point.parse(line)
+                dots += Point.of(line)
             } else {
                 folds += Fold.parse(line)
             }
