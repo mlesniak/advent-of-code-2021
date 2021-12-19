@@ -69,12 +69,13 @@ class Day18 {
 
         data class Result(val node: Node, val stop: Boolean)
 
-        fun split() {
+        fun split(): Boolean {
             if (leaf()) {
                 if (value!! <= 9) {
-                    return
+                    return true
                 }
 
+                println("Splitting $this")
                 val node = Node(
                     this.parent,
                     null,
@@ -88,10 +89,17 @@ class Day18 {
                 } else {
                     parent!!.right = node
                 }
+                println("  new node $node")
+                return false
             }
 
-            left?.split()
-            right?.split()
+            val c1 = left?.split() ?: true
+            if (c1) {
+                val c2 = right?.split() ?: true
+                return c2
+            } else {
+                return false
+            }
         }
 
         fun explode(): Boolean = explode(0)
@@ -104,7 +112,8 @@ class Day18 {
 
             if (level == 4) {
                 if (left!!.leaf() && right!!.leaf()) {
-                    addLeft(this.parent, left!!.value!!)
+                    println("exploding $this")
+                    addLeft(this, left!!.value!!)
                     addRight(this, right!!.value!!)
 
                     left = null
@@ -121,17 +130,57 @@ class Day18 {
             return right!!.explode(level + 1)
         }
 
+        // private fun addLeft(node: Node?, value: Int) {
+        //     if (node == null) {
+        //         return
+        //     }
+        //     if (node.left!!.leaf()) {
+        //         node.left!!.value = node.left!!.value!! + value
+        //         return
+        //     }
+        //
+        //     addLeft(node.parent, value)
+        // }
+
         private fun addLeft(node: Node?, value: Int) {
+            // println("node=$node")
             if (node == null) {
                 return
             }
-            if (node.left!!.leaf()) {
-                node.left!!.value = node.left!!.value!! + value
+
+            // UP
+            var cur: Node? = node
+            while (cur != null && cur!!.left != null && cur.parent != null && cur.parent!!.left === cur) {
+                // println("cur=$cur")
+                cur = cur.parent
+            }
+            if (cur!!.parent == null) {
+                // root
                 return
             }
+            cur = cur.parent!!.left
+            // println("top=$cur")
 
-            addLeft(node.parent, value)
+            // DOWN
+            while (true) {
+                // println("at $cur")
+                if (cur != null && cur.leaf()) {
+                    cur.value = cur.value!! + value
+                    return
+                }
+
+                if (cur != null && cur.right != null) {
+                    if (cur.right!!.leaf()) {
+                        cur.right!!.value = cur.right!!.value!! + value
+                        return
+                    }
+                    cur = cur!!.right
+                    continue
+                }
+                cur = cur!!.left
+            }
         }
+
 
         private fun addRight(node: Node?, value: Int) {
             // println("node=$node")
@@ -182,31 +231,41 @@ class Day18 {
 
     fun part1() {
         val lines = File("day18.txt").readLines()
-        lines.debug()
+        // lines.debug()
 
         var line = Node.parse(null, lines[0])
+        println("INITIAL=$line\n")
         for (i in 1 until lines.size) {
+            println("\n\nAdding ${lines[i]}")
             val cur = Node.parse(null, lines[i])
             line = line + cur
             perform(line)
+            println("RESULT")
             line.debug()
+            // return
         }
 
         println("\n\nFinal")
         line.debug()
 
+        val amgn = line.magnitude()
+        println(amgn)
+
         // val n1 = Node.parse(
         //     null,
         //     // "[[[[[9,8],1],2],3],4]"
-        //     // "[7,[6,[5,[4,[3,2]]]]]"
+        //     "[7,[6,[5,[4,[3,2]]]]]"
         //     // "[[6,[5,[4,[3,2]]]],1]"
         //     // "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]"
         //     // "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]"
         //     // "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]"
         //
         //     // "[10,3]"
-        //     "[[[[4,3],4],4],[7,[[8,4],9]]]"
+        //     // "[[[[4,3],4],4],[7,[[8,4],9]]]"
         // )
+        // n1.explode()
+        // n1.debug()
+
         // val n2 = Node.parse(
         //     null,
         //     "[1,1]"
@@ -227,21 +286,23 @@ class Day18 {
         while (car != node.toString()) {
             car = node.toString()
             var cur = ""
+            println("\nexploding...")
             // node.debug()
             while (cur != node.toString()) {
                 cur = node.toString()
-                // println("cur=$cur")
-                node.debug()
+                println("explode cur=$cur")
+                // node.debug()
                 node.explode()
             }
 
             cur = ""
-            while (cur != node.toString()) {
+            println("\nsplitting...: $node")
+            // while (cur != node.toString()) {
                 cur = node.toString()
-                // println("cur=$cur")
-                node.debug()
+                println("split cur=$cur")
+                // node.debug()
                 node.split()
-            }
+            // }
         }
     }
 }
