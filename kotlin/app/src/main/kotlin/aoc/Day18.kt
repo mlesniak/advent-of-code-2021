@@ -75,7 +75,7 @@ class Day18 {
                     return true
                 }
 
-                println("Splitting $this")
+                // println("Splitting $this")
                 val node = Node(
                     this.parent,
                     null,
@@ -89,7 +89,7 @@ class Day18 {
                 } else {
                     parent!!.right = node
                 }
-                println("  new node $node")
+                // println("  new node $node")
                 return false
             }
 
@@ -112,7 +112,7 @@ class Day18 {
 
             if (level == 4) {
                 if (left!!.leaf() && right!!.leaf()) {
-                    println("exploding $this")
+                    // println("exploding $this")
                     addLeft(this, left!!.value!!)
                     addRight(this, right!!.value!!)
 
@@ -233,23 +233,43 @@ class Day18 {
         val lines = File("day18.txt").readLines()
         // lines.debug()
 
-        var line = Node.parse(null, lines[0])
-        println("INITIAL=$line\n")
-        for (i in 1 until lines.size) {
-            println("\n\nAdding ${lines[i]}")
-            val cur = Node.parse(null, lines[i])
-            line = line + cur
-            perform(line)
-            println("RESULT")
-            line.debug()
-            // return
+        // var line = Node.parse(null, lines[0])
+        // println("INITIAL=$line\n")
+        // for (i in 1 until lines.size) {
+        //     println("\n\nAdding ${lines[i]}")
+        //     val cur = Node.parse(null, lines[i])
+        //     line = line + cur
+        //     perform(line)
+        //     println("RESULT")
+        //     line.debug()
+        //     // return
+        // }
+        //
+        // println("\n\nFinal")
+        // line.debug()
+        //
+        // val amgn = line.magnitude()
+        // println(amgn)
+
+        var magn = Int.MIN_VALUE
+        for (i in lines.indices) {
+            for (j in lines.indices) {
+                if (i == j) {
+                    continue
+                }
+                println("$i -> $j")
+                val l1 = Node.parse(null, lines[i])
+                val l2 = Node.parse(null, lines[j])
+                val cur = l1+l2
+                perform(cur)
+                val m = cur.magnitude()
+                if (magn < m) {
+                    println("magn=$magn")
+                    magn = m
+                }
+            }
         }
-
-        println("\n\nFinal")
-        line.debug()
-
-        val amgn = line.magnitude()
-        println(amgn)
+        println(magn)
 
         // val n1 = Node.parse(
         //     null,
@@ -286,20 +306,20 @@ class Day18 {
         while (car != node.toString()) {
             car = node.toString()
             var cur = ""
-            println("\nexploding...")
+            // println("\nexploding...")
             // node.debug()
             while (cur != node.toString()) {
                 cur = node.toString()
-                println("explode cur=$cur")
+                // println("explode cur=$cur")
                 // node.debug()
                 node.explode()
             }
 
             cur = ""
-            println("\nsplitting...: $node")
+            // println("\nsplitting...: $node")
             // while (cur != node.toString()) {
                 cur = node.toString()
-                println("split cur=$cur")
+                // println("split cur=$cur")
                 // node.debug()
                 node.split()
             // }
