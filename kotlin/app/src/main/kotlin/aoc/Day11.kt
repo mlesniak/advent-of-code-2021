@@ -18,7 +18,7 @@ class Day11 {
 
             // Then, any octopus with an energy level greater than 9 flashes.
             var flashed = false
-            val flashedCoords = mutableListOf<Vector>()
+            val flashedCoords = mutableListOf<Vector2>()
             do {
                 flashed = false
                 // println("DEBUG/current=")
@@ -30,7 +30,7 @@ class Day11 {
                     if (v >= 10) {
                         flashed = true
                         numFlashes++
-                        flashedCoords.add(Vector(x, y))
+                        flashedCoords.add(Vector2(x, y))
                         current.neighbors(x, y) { nx, ny, nv ->
                             if (nv < 10) {
                                 tmp[ny][nx] = tmp[ny][nx] + 1
@@ -42,7 +42,7 @@ class Day11 {
                 }
                 current = tmp
                 current =current.map { x, y, v ->
-                    if (flashedCoords.contains(Vector(x, y))) {
+                    if (flashedCoords.contains(Vector2(x, y))) {
                         0
                     } else {
                         v

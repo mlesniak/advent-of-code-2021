@@ -35,10 +35,10 @@ class Day15 {
         // input.debug()
         // return
 
-        val risks = mutableMapOf<Vector, Int>()
+        val risks = mutableMapOf<Vector2, Int>()
         // val unvisitedNodes = mutableSetOf<Point>()
 
-        val compareByRisk: Comparator<Vector> = compareBy { risks[it] }
+        val compareByRisk: Comparator<Vector2> = compareBy { risks[it] }
         val unvisitedNodes = PriorityQueue(compareByRisk)
         for (y in map.indices) {
             for (x in 0 until map[0].size) {
@@ -48,8 +48,8 @@ class Day15 {
                     } else {
                         Int.MAX_VALUE
                     }
-                risks[Vector(x, y)] = initialScore
-                unvisitedNodes += Vector(x, y)
+                risks[Vector2(x, y)] = initialScore
+                unvisitedNodes += Vector2(x, y)
             }
         }
         // unvisitedNodes.debug()
@@ -76,7 +76,7 @@ class Day15 {
             // println("current=$current risk=$minRisk")
 
             map.neighbors(current.x, current.y) { nx, ny, v ->
-                val vector = Vector(nx, ny)
+                val vector = Vector2(nx, ny)
                 if (vector !in unvisitedNodes) {
                     return@neighbors
                 }
@@ -94,7 +94,7 @@ class Day15 {
             // readLine()
         }
 
-        val goal = Vector(map.width() - 1, map.height() - 1)
+        val goal = Vector2(map.width() - 1, map.height() - 1)
         val goalScore = risks[goal]
         println("Score for $goal=$goalScore")
 

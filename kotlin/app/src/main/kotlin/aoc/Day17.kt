@@ -2,7 +2,7 @@ package aoc
 
 class Day17 {
     data class Area(val x1: Int, val y1: Int, val x2: Int, val y2: Int) {
-        operator fun contains(p: Vector): Boolean =
+        operator fun contains(p: Vector2): Boolean =
             p.x in x1..x2 && p.y in y1..y2
     }
 
@@ -10,7 +10,7 @@ class Day17 {
         val target = Area(144, -100, 178, -76)
         // val target = Area(20, -10, 30, -5)
 
-        simulate(Vector(0,0), Vector(6,9), 50, target)
+        simulate(Vector2(0,0), Vector2(6,9), 50, target)
 
         var counter = 0
         val hits = mutableListOf<Result>()
@@ -18,8 +18,8 @@ class Day17 {
             println("$x")
             for (y in -500..500) {
                 // println("x=$x,y=$y")
-                val start = Vector(0, 0)
-                val velocity = Vector(x, y)
+                val start = Vector2(0, 0)
+                val velocity = Vector2(x, y)
                 val hit = simulate(start, velocity, 1000, target)
                 if (hit.hit) {
                     counter++
@@ -35,7 +35,7 @@ class Day17 {
 
     data class Result(val hit: Boolean, val maxY: Int)
 
-    private fun simulate(start: Vector, velocity: Vector, maxSteps: Int, target: Area): Result {
+    private fun simulate(start: Vector2, velocity: Vector2, maxSteps: Int, target: Area): Result {
         // println("***** start=$start, velocity=$velocity")
         var vel = velocity
         var pos = start
@@ -61,7 +61,7 @@ class Day17 {
             }
             val dy = -1
             val ny = vel.y + dy
-            vel = Vector(vel.x + dx, ny)
+            vel = Vector2(vel.x + dx, ny)
             // println("  pos=$pos, vel=$vel")
         }
 

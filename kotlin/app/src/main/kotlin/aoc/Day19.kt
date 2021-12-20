@@ -4,10 +4,10 @@ import java.io.File
 import kotlin.math.sqrt
 
 class Day19 {
-    data class Scanner(val id: Int, val vectors: List<Vector>) {
+    data class Scanner(val id: Int, val vectors: List<Vector2>) {
         // Beacon -> relative distances to other beacons.
         // Assumption: distances are always unique enough.
-        private val beaconFingerprints = mutableMapOf<Vector, Set<Double>>()
+        private val beaconFingerprints = mutableMapOf<Vector2, Set<Double>>()
 
         init {
             vectors.forEach { p ->
@@ -31,8 +31,8 @@ class Day19 {
             |)""".trimMargin("|")
         }
 
-        fun equalBeacons(s: Scanner): Set<Vector> {
-            val res = mutableSetOf<Vector>()
+        fun equalBeacons(s: Scanner): Set<Vector2> {
+            val res = mutableSetOf<Vector2>()
             beaconFingerprints.forEach { fp ->
                 s.beaconFingerprints.forEach { sfp ->
                     if (fp.value == sfp.value) {
@@ -76,7 +76,7 @@ class Day19 {
 
     private fun scan(iter: Iterator<String>): Scanner {
         val id = iter.next().split(" ")[2].toInt()
-        val vectors = mutableListOf<Vector>()
+        val vectors = mutableListOf<Vector2>()
         while (true) {
             if (!iter.hasNext()) {
                 break
@@ -85,7 +85,7 @@ class Day19 {
             if (line.isEmpty()) {
                 break
             }
-            vectors += Vector.of(line)
+            vectors += Vector2.of(line)
         }
 
         return Scanner(id, vectors)
