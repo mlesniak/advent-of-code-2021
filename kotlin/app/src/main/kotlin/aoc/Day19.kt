@@ -7,7 +7,7 @@ class Day19 {
     data class Scanner(val id: Int, val vectors: List<Vector>) {
         // Beacon -> relative distances to other beacons.
         // Assumption: distances are always unique enough.
-        private val beaconFingerprint = mutableMapOf<Vector, Set<Double>>()
+        private val beaconFingerprints = mutableMapOf<Vector, Set<Double>>()
 
         init {
             vectors.forEach { p ->
@@ -19,7 +19,7 @@ class Day19 {
 
                     dists += sqrt((o.x - p.x) * (o.x - p.x) + (o.y - p.y) * (o.y - p.y).toDouble())
                 }
-                beaconFingerprint[p] = dists
+                beaconFingerprints[p] = dists
             }
         }
 
@@ -27,8 +27,20 @@ class Day19 {
             return """Scanner(
                 |   id=$id,
                 |   vectors=$vectors,
-                |   beaconFingerprint=$beaconFingerprint
+                |   beaconFingerprint=$beaconFingerprints
             |)""".trimMargin("|")
+        }
+
+        fun equalBeacons(s: Scanner): Set<Vector> {
+            val res = mutableSetOf<Vector>()
+            beaconFingerprints.forEach { fp ->
+                s.beaconFingerprints.forEach { sfp ->
+                    if (fp.value == sfp.value) {
+                        res += fp.key
+                    }
+                }
+            }
+            return res
         }
     }
 
@@ -40,6 +52,26 @@ class Day19 {
         }
 
         scanner.debug()
+
+        var foundBeacon = 0
+        val numberOfCommonBeacons = 3
+        // Find pairs of scanner with common beacons.
+        scanner.forEach { s1 ->
+            scanner.forEach loop@ { s2 ->
+                if (s1 === s2) {
+                   return@loop
+                }
+
+                val equalBeacons = s1.equalBeacons(s2)
+                equalBeacons.debug("equalBeacons=")
+                if (equalBeacons.size == numberOfCommonBeacons) {
+                    // TODO(mlesniak) ???
+                    foundBeacon += equalBeacons.size
+                }
+            }
+        }
+
+        println(foundBeacon)
     }
 
     private fun scan(iter: Iterator<String>): Scanner {
