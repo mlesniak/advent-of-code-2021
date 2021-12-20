@@ -24,7 +24,11 @@ class Day19 {
         }
 
         override fun toString(): String {
-            return "Scanner(id=$id, vectors=$vectors, beaconFingerprint=$beaconFingerprint)"
+            return """Scanner(
+                |   id=$id,
+                |   vectors=$vectors,
+                |   beaconFingerprint=$beaconFingerprint
+            |)""".trimMargin("|")
         }
     }
 
