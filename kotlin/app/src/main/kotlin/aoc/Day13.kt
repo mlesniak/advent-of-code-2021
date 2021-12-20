@@ -21,7 +21,7 @@ class Day13 {
     }
 
     fun part1() {
-        val dots = mutableSetOf<Point>()
+        val dots = mutableSetOf<Vector>()
         val folds = mutableListOf<Fold>()
 
         val lines = File("day13.txt").readLines()
@@ -32,7 +32,7 @@ class Day13 {
                 continue
             }
             if (parseDots) {
-                dots += Point.of(line)
+                dots += Vector.of(line)
             } else {
                 folds += Fold.parse(line)
             }

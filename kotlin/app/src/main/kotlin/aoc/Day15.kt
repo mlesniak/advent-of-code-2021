@@ -35,10 +35,10 @@ class Day15 {
         // input.debug()
         // return
 
-        val risks = mutableMapOf<Point, Int>()
+        val risks = mutableMapOf<Vector, Int>()
         // val unvisitedNodes = mutableSetOf<Point>()
 
-        val compareByRisk: Comparator<Point> = compareBy { risks[it] }
+        val compareByRisk: Comparator<Vector> = compareBy { risks[it] }
         val unvisitedNodes = PriorityQueue(compareByRisk)
         for (y in map.indices) {
             for (x in 0 until map[0].size) {
@@ -48,8 +48,8 @@ class Day15 {
                     } else {
                         Int.MAX_VALUE
                     }
-                risks[Point(x, y)] = initialScore
-                unvisitedNodes += Point(x, y)
+                risks[Vector(x, y)] = initialScore
+                unvisitedNodes += Vector(x, y)
             }
         }
         // unvisitedNodes.debug()
@@ -76,25 +76,25 @@ class Day15 {
             // println("current=$current risk=$minRisk")
 
             map.neighbors(current.x, current.y) { nx, ny, v ->
-                val point = Point(nx, ny)
-                if (point !in unvisitedNodes) {
+                val vector = Vector(nx, ny)
+                if (vector !in unvisitedNodes) {
                     return@neighbors
                 }
 
                 val thisScore = minRisk + v
-                val curScore = risks[point]!!
+                val curScore = risks[vector]!!
                 if (thisScore < curScore) {
-                    risks[point] = thisScore
+                    risks[vector] = thisScore
                 }
-                unvisitedNodes -= point
-                unvisitedNodes += point
+                unvisitedNodes -= vector
+                unvisitedNodes += vector
             }
             // unvisitedNodes.remove(current)
             // unvisitedNodes.sortBy { risks[it] }
             // readLine()
         }
 
-        val goal = Point(map.width() - 1, map.height() - 1)
+        val goal = Vector(map.width() - 1, map.height() - 1)
         val goalScore = risks[goal]
         println("Score for $goal=$goalScore")
 

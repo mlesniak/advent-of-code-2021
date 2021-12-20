@@ -3,13 +3,13 @@ package aoc
 import java.io.File
 import kotlin.math.absoluteValue
 
-data class Point(val x: Int, val y: Int) {
-    operator fun plus(other: Point): Point = Point(x + other.x, y + other.y)
+data class Vector(val x: Int, val y: Int) {
+    operator fun plus(other: Vector): Vector = Vector(x + other.x, y + other.y)
 
     companion object {
-        fun of(value: String): Point {
+        fun of(value: String): Vector {
             val parts = value.trim().split(",")
-            return Point(
+            return Vector(
                 x = parts[0].toInt(),
                 y = parts[1].toInt()
             )

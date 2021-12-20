@@ -1,15 +1,38 @@
 package aoc
 
 import java.io.File
+import kotlin.math.sqrt
 
 class Day19 {
-    data class Scanner(val id: Int, val points: List<Point>)
+    data class Scanner(val id: Int, val vectors: List<Vector>) {
+        // Beacon -> relative distances to other beacons.
+        // Assumption: distances are always unique enough.
+        private val beaconFingerprint = mutableMapOf<Vector, Set<Double>>()
+
+        init {
+            vectors.forEach { p ->
+                val dists = mutableSetOf<Double>()
+                vectors.forEach loop@{ o ->
+                    if (o === p) {
+                        return@loop
+                    }
+
+                    dists += sqrt((o.x - p.x) * (o.x - p.x) + (o.y - p.y) * (o.y - p.y).toDouble())
+                }
+                beaconFingerprint[p] = dists
+            }
+        }
+
+        override fun toString(): String {
+            return "Scanner(id=$id, vectors=$vectors, beaconFingerprint=$beaconFingerprint)"
+        }
+    }
 
     fun part1() {
         val scanner = mutableListOf<Scanner>()
-        val iter = File("day19.txt").readLines().iterator()
-        while (iter.hasNext()) {
-            scanner += scan(iter)
+        val fileInput = File("day19.txt").readLines().iterator()
+        while (fileInput.hasNext()) {
+            scanner += scan(fileInput)
         }
 
         scanner.debug()
@@ -17,7 +40,7 @@ class Day19 {
 
     private fun scan(iter: Iterator<String>): Scanner {
         val id = iter.next().split(" ")[2].toInt()
-        val points = mutableListOf<Point>()
+        val vectors = mutableListOf<Vector>()
         while (true) {
             if (!iter.hasNext()) {
                 break
@@ -26,9 +49,9 @@ class Day19 {
             if (line.isEmpty()) {
                 break
             }
-            points += Point.of(line)
+            vectors += Vector.of(line)
         }
 
-        return Scanner(id, points)
+        return Scanner(id, vectors)
     }
 }
