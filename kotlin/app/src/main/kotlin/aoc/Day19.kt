@@ -4,10 +4,10 @@ import java.io.File
 import kotlin.math.sqrt
 
 class Day19 {
-    data class Scanner(val id: Int, val vectors: List<Vector2>) {
+    data class Scanner(val id: Int, val vectors: List<Vector3>) {
         // Beacon -> relative distances to other beacons.
         // Assumption: distances are always unique enough.
-        private val beaconFingerprints = mutableMapOf<Vector2, Set<Double>>()
+        val beaconFingerprints = mutableMapOf<Vector3, Set<Double>>()
 
         init {
             vectors.forEach { p ->
@@ -17,7 +17,11 @@ class Day19 {
                         return@loop
                     }
 
-                    dists += sqrt((o.x - p.x) * (o.x - p.x) + (o.y - p.y) * (o.y - p.y).toDouble())
+                    dists += sqrt(
+                        +(o.x - p.x) * (o.x - p.x)
+                                + (o.y - p.y) * (o.y - p.y)
+                                + (o.z - p.z) * (o.z - p.z).toDouble()
+                    )
                 }
                 beaconFingerprints[p] = dists
             }
@@ -31,12 +35,15 @@ class Day19 {
             |)""".trimMargin("|")
         }
 
-        fun equalBeacons(s: Scanner): Set<Vector2> {
-            val res = mutableSetOf<Vector2>()
+        fun findCommonBeacons(s: Scanner): List<Pair<Vector3, Vector3>> {
+            val numberOfCommonBeacons = 12 - 1
+
+            val res = mutableListOf<Pair<Vector3, Vector3>>()
             beaconFingerprints.forEach { fp ->
                 s.beaconFingerprints.forEach { sfp ->
-                    if (fp.value == sfp.value) {
-                        res += fp.key
+                    val commonBeacons = fp.value.intersect(sfp.value)
+                    if (commonBeacons.size >= numberOfCommonBeacons) {
+                        res += Pair(fp.key, sfp.key)
                     }
                 }
             }
@@ -51,32 +58,111 @@ class Day19 {
             scanner += scan(fileInput)
         }
 
-        scanner.debug()
+        val scannerPositions = mutableMapOf<Int, Vector3>()
+        scannerPositions[0] = Vector3(0, 0, 0)
 
-        var foundBeacon = 0
-        val numberOfCommonBeacons = 3
-        // Find pairs of scanner with common beacons.
-        scanner.forEach { s1 ->
-            scanner.forEach loop@ { s2 ->
-                if (s1 === s2) {
-                   return@loop
+        for (i in scanner.indices) {
+            for (j in scanner.indices) {
+                val sourceId = scanner[i].id
+                val targetId = scanner[j].id
+                if (scannerPositions[sourceId] == null) {
+                    // No reference from starting point.
+                    continue
                 }
+                if (scannerPositions[sourceId] != null && scannerPositions[targetId] != null) {
+                    // Already found a pair?
+                    continue
+                }
+                separator()
+                println("Examining scanner pair i=$i and j=$j")
+                println("Current scanner positions:")
+                scannerPositions.debug(indent = 2)
+                val commonBeacons = scanner[i].findCommonBeacons(scanner[j])
+                if (commonBeacons.size != 12) {
+                    continue
+                }
+                println("Scanner have 12 beacon in common")
 
-                val equalBeacons = s1.equalBeacons(s2)
-                equalBeacons.debug("equalBeacons=")
-                if (equalBeacons.size == numberOfCommonBeacons) {
-                    // TODO(mlesniak) ???
-                    foundBeacon += equalBeacons.size
+                // Find scanner position
+                val possibilities = arrayOf(
+                    arrayOf(0, 1, 2),
+                    arrayOf(0, 2, 1),
+                    arrayOf(1, 0, 2),
+                    arrayOf(2, 0, 1),
+                    arrayOf(1, 2, 0),
+                    arrayOf(2, 1, 0),
+                )
+                loop@ for (p in possibilities) {
+                    for (p0s in arrayOf(-1, 1)) {
+                        for (p1s in arrayOf(-1, 1)) {
+                            for (p2s in arrayOf(-1, 1)) {
+                                println("\nPermutation ${p0s}*[${p[0]}] ${p1s}*[${p[1]}] $p2s*[${p[2]}]")
+                                // Potential sensor position
+                                val b0 = commonBeacons[0].first
+                                val b1 = commonBeacons[0].second
+                                val sensor = Vector3(
+                                    b0.x - b1[p[0]] * p0s,
+                                    b0.y - b1[p[1]] * p1s,
+                                    b0.z - b1[p[2]] * p2s,
+                                )
+                                println("  Sensor at $sensor")
+                                println("  b$i=$b0")
+                                println("  b$j=$b1")
+
+                                val c0 = commonBeacons[1].first
+                                val c1 = commonBeacons[1].second
+                                println("  c$i=$c0")
+                                println("  c$j=$c1")
+
+                                // Relative to coordinates of sensor_i and
+                                // relative to permutations
+                                val c1list = arrayOf(c1.x, c1.y, c1.z)
+                                val cm = Vector3(
+                                    c1list[p[0]] * p0s,
+                                    c1list[p[1]] * p1s,
+                                    c1list[p[2]] * p2s,
+                                )
+                                println("  cm=$cm")
+                                val potentialC0 = sensor + cm
+                                println("  pt=$potentialC0")
+                                if (potentialC0 == c0) {
+                                    println("=>FOUND: SENSOR=$sensor for $sourceId->$targetId")
+
+                                    val source = scannerPositions[sourceId]!!
+                                    scannerPositions[targetId] = Vector3(
+                                        source.x + sensor.x,
+                                        source.y + sensor.y,
+                                        source.z + sensor.z,
+                                    )
+                                    println("  STORED=${scannerPositions[targetId]}")
+                                    // Update all beacon positions of this scanner.
+                                    val updatedPositions = scanner[j].vectors.map { v ->
+                                        Vector3(
+                                            v[p[0]] * p0s,
+                                            v[p[1]] * p1s,
+                                            v[p[2]] * p2s,
+                                        )
+                                    }
+                                    scanner[j] = Scanner(j, updatedPositions)
+                                    // scanner[j].vectors.forEach { v ->
+                                    //     println("    $v")
+                                    // }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        println(foundBeacon)
+        separator()
+        scannerPositions.debug()
+
     }
 
     private fun scan(iter: Iterator<String>): Scanner {
         val id = iter.next().split(" ")[2].toInt()
-        val vectors = mutableListOf<Vector2>()
+        val vectors = mutableListOf<Vector3>()
         while (true) {
             if (!iter.hasNext()) {
                 break
@@ -85,7 +171,7 @@ class Day19 {
             if (line.isEmpty()) {
                 break
             }
-            vectors += Vector2.of(line)
+            vectors += Vector3.of(line)
         }
 
         return Scanner(id, vectors)

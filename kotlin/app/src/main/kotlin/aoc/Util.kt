@@ -6,9 +6,9 @@ fun <T> Collection<T>.debug() {
     }
 }
 
-fun <T, V> Map<T, V>.debug() {
+fun <T, V> Map<T, V>.debug(indent: Int = 0) {
     for (elem in this) {
-        println(elem)
+        println(" ".repeat(indent) + elem)
     }
 }
 
@@ -24,4 +24,8 @@ fun Any.debug(desc: String? = null) {
         print("$desc: ")
     }
     println(this)
+}
+
+fun separator() {
+    println("-".repeat(80))
 }
