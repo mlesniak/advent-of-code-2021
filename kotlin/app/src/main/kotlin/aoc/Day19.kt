@@ -158,6 +158,18 @@ class Day19 {
         separator()
         scannerPositions.debug()
 
+        separator()
+        // val uniques = mutableMap<Vector3, Set<Double>>
+        // val all = scanner.map { s -> s.beaconFingerprints}
+        // all.debug()
+        val uniques = mutableSetOf<Vector3>()
+        scanner.forEach { s ->
+            s.vectors.forEach { v ->
+                val translated = v + scannerPositions[s.id]!!
+                uniques += translated
+            }
+        }
+        println(uniques.size)
     }
 
     private fun scan(iter: Iterator<String>): Scanner {
