@@ -1,5 +1,7 @@
 package aoc
 
+import kotlin.math.abs
+
 data class Vector3(val x: Int, val y: Int, val z: Int) {
     companion object {
         fun of(value: String): Vector3 {
@@ -11,6 +13,8 @@ data class Vector3(val x: Int, val y: Int, val z: Int) {
             )
         }
     }
+
+    fun manhattan(o: Vector3): Int = abs(x - o.x) + abs(y -o.y) + abs(z - o.z)
 
     operator fun plus(o: Vector3): Vector3 =
         Vector3(

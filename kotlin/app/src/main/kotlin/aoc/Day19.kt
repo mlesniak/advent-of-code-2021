@@ -164,15 +164,27 @@ class Day19 {
         // val uniques = mutableMap<Vector3, Set<Double>>
         // val all = scanner.map { s -> s.beaconFingerprints}
         // all.debug()
-        val uniques = mutableSetOf<Vector3>()
-        for (i in scanner.indices) {
-            val s = scanner[i]
-            s.vectors.forEach { v ->
-                val translated = v + scannerPositions[i]!!
-                uniques += translated
+        // val uniques = mutableSetOf<Vector3>()
+        // for (i in scanner.indices) {
+        //     val s = scanner[i]
+        //     s.vectors.forEach { v ->
+        //         val translated = v + scannerPositions[i]!!
+        //         uniques += translated
+        //     }
+        // }
+        // println(uniques.size)
+
+        var maxDist = Int.MIN_VALUE
+        scannerPositions.values.forEach { s1 ->
+            scannerPositions.values.forEach { s2 ->
+                val dist = s1.manhattan(s2)
+                println("$s1 -> $s2 = $dist")
+                if (dist > maxDist) {
+                    maxDist = dist
+                }
             }
         }
-        println(uniques.size)
+        println(maxDist)
     }
 
     private fun scan(iter: Iterator<String>): Scanner {
