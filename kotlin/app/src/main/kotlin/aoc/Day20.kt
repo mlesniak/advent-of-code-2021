@@ -33,7 +33,7 @@ class Day20 {
             val y2 = pixels.maxOf { it.y } + 1
             for (y in y1..y2) {
                 for (x in x1..x2) {
-                    println("\nExamining $x/$y")
+                    // println("Examining $x/$y")
                     val sb = StringBuilder()
 
                     for (dy in arrayOf(-1, 0, 1)) {
@@ -57,6 +57,8 @@ class Day20 {
             next.render()
             pixels = next
         }
+
+        println("Pixels=${pixels.size}")
     }
 }
 
