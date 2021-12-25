@@ -8,18 +8,19 @@ class Day20 {
         val algorithm = file.next()
         file.next()
 
+        // alle koordinaten aus ursprungsbild
         var pixels = mutableSetOf<Vector2>()
-        var y = 0
+        var row = 0
         while (file.hasNext()) {
             val line = file.next()
             for (x in line.indices) {
                 val c = line[x]
                 if (c == '#') {
-                    pixels += Vector2(x, y)
+                    pixels += Vector2(x, row)
                 }
             }
 
-            y++
+            row++
         }
         pixels.render()
 
@@ -27,10 +28,10 @@ class Day20 {
             separator()
             println("STEP $step")
             val next = mutableSetOf<Vector2>()
-            val x1 = pixels.minOf { it.x } - 1
-            val y1 = pixels.minOf { it.y } - 1
-            val x2 = pixels.maxOf { it.x } + 1
-            val y2 = pixels.maxOf { it.y } + 1
+            val x1 = pixels.minOf { it.x } - 4
+            val y1 = pixels.minOf { it.y } - 4
+            val x2 = pixels.maxOf { it.x } + 4
+            val y2 = pixels.maxOf { it.y } + 4
             for (y in y1..y2) {
                 for (x in x1..x2) {
                     // println("Examining $x/$y")
@@ -39,12 +40,13 @@ class Day20 {
                     for (dy in arrayOf(-1, 0, 1)) {
                         for (dx in arrayOf(-1, 0, 1)) {
                             val v = Vector2(x + dx, y + dy)
-                            // println("$v -> ${v in pixels}")
+                            // wenn im ursprungsbild
                             if (v in pixels) {
                                 sb.append("1")
                             } else {
                                 sb.append("0")
                             }
+                            // sonst abhaengig von schritt modulo an oder aus
                         }
                     }
 
@@ -55,6 +57,7 @@ class Day20 {
                 }
             }
             next.render()
+            // ursprungsbild erweitern
             pixels = next
         }
 
@@ -63,10 +66,10 @@ class Day20 {
 }
 
 fun Set<Vector2>.render() {
-    val x1 = minOf { it.x } - 1
-    val y1 = minOf { it.y } - 1
-    val x2 = maxOf { it.x } + 1
-    val y2 = maxOf { it.y } + 1
+    val x1 = minOf { it.x } - 4
+    val y1 = minOf { it.y } - 4
+    val x2 = maxOf { it.x } + 4
+    val y2 = maxOf { it.y } + 4
 
     for (y in y1..y2) {
         for (x in x1..x2) {
