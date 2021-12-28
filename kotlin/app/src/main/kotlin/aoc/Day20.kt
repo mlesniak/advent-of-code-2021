@@ -42,9 +42,9 @@ class Day20 {
                                 val c = current[yy][xx]
                                 sb += if (c == '#') "1" else "0"
                             } else {
-                                // Part 1
+                                // Testcase
                                 sb += "0"
-                                // Part 2
+                                // Realcase
                                 // sb += if (step % 2 == 0) "0" else "1"
                                 // println("    outside")
                             }
@@ -60,9 +60,9 @@ class Day20 {
             println("FINISHED")
             // tmp.forEach { line -> println(line) }
 
-            // Part 1
+            // Testcase
             val nextBackgroundChar = '.'
-            // Part 2
+            // Realcase
             // val nextBackgroundChar = if (step % 2 == 1) '.' else '#'
             current = extendGrid(tmp, nextBackgroundChar)
         }
