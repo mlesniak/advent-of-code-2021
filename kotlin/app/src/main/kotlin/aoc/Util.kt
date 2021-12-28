@@ -26,6 +26,6 @@ fun Any.debug(desc: String? = null) {
     println(this)
 }
 
-fun separator() {
-    println("-".repeat(80))
+fun separator(count: Int = 80, char: Char = '-') {
+    println("$char".repeat(count))
 }
