@@ -18,7 +18,7 @@ class Day20 {
         var current = initialGrid
         current = extendGrid(current, '.')
         // Simulate a single step
-        val maxSteps = 2
+        val maxSteps = 50
         for (step in 0 until maxSteps) {
             separator()
             println("STEP: $step")
@@ -42,7 +42,10 @@ class Day20 {
                                 val c = current[yy][xx]
                                 sb += if (c == '#') "1" else "0"
                             } else {
-                                sb += if (step % 2 == 0) "0" else "1"
+                                // Part 1
+                                sb += "0"
+                                // Part 2
+                                // sb += if (step % 2 == 0) "0" else "1"
                                 // println("    outside")
                             }
                         }
@@ -57,7 +60,10 @@ class Day20 {
             println("FINISHED")
             // tmp.forEach { line -> println(line) }
 
-            val nextBackgroundChar = if (step % 2 == 1) '.' else '#'
+            // Part 1
+            val nextBackgroundChar = '.'
+            // Part 2
+            // val nextBackgroundChar = if (step % 2 == 1) '.' else '#'
             current = extendGrid(tmp, nextBackgroundChar)
         }
 
