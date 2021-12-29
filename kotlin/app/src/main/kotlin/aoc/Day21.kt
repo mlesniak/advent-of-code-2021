@@ -11,8 +11,12 @@ class Day21 {
 
     fun part1() {
         val players = arrayOf(
+            // Player(4),
+            // Player(8)
+
+            // Real input
             Player(4),
-            Player(8)
+            Player(3)
         )
         var dice = 0
         var counter = 0
