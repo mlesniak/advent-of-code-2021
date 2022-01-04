@@ -33,6 +33,24 @@ class Day22 {
 
     fun part1() {
         val steps = File("day22.txt").readLines().map(Step.Companion::from)
-        steps.debug()
+        val cubes = mutableSetOf<Vector3>()
+
+        for (step in steps) {
+            separator()
+            println("STEP $step")
+            for (x in step.x) {
+                for (y in step.y) {
+                    for (z in step.z) {
+                        val cube = Vector3(x, y, z)
+                        when (step.switch) {
+                            Step.Switch.ON -> cubes += cube
+                            Step.Switch.OFF -> cubes -= cube
+                        }
+                    }
+                }
+            }
+        }
+
+        println("Part1: ${cubes.size}")
     }
 }
