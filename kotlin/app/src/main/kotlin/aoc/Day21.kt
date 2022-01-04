@@ -10,6 +10,8 @@ class Day21 {
 
     data class State(val players: List<Player>, val currentPlayer: Int)
 
+    val cache = mutableMapOf<State, Pair<Long, Long>>()
+
     fun part2() {
         val root = State(listOf(
             Player(4),
@@ -23,6 +25,12 @@ class Day21 {
 
     // TODO(mlesniak) Add caching later
     private fun compute(state: State): Pair<Long, Long> {
+        // Recursive call, computeIfAbsent not working, maybe own function?
+        val cv = cache[state]
+        if (cv != null) {
+            return cv
+        }
+
         var p0 = 0L
         var p1 = 0L
         forDiracDice { x, y, z ->
@@ -31,7 +39,9 @@ class Day21 {
             p1 += ps.second
         }
 
-        return p0 to p1
+        val v = p0 to p1
+        cache[state] = v
+        return v
     }
 
     private fun computeNextState(state: State, x: Int, y: Int, z: Int): Pair<Long, Long> {
@@ -46,7 +56,7 @@ class Day21 {
         val newScore = currentPlayer.score + scoreDelta
 
         // Check if finished
-        val winScore = 12
+        val winScore = 21
         if (newScore >= winScore) {
             return if (state.currentPlayer == 0) {
                 1L to 0L
