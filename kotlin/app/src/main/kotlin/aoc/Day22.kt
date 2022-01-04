@@ -13,7 +13,10 @@ class Day22 {
         companion object {
             private fun toRange(s: String): IntRange {
                 val parts = s.split("..")
-                return IntRange(parts[0].toInt(), parts[1].toInt())
+                return IntRange(
+                    parts[0].toInt(),
+                    parts[1].toInt(),
+                )
             }
 
             fun from(s: String): Step {
@@ -32,15 +35,26 @@ class Day22 {
     }
 
     fun part1() {
-        val steps = File("day22.txt").readLines().map(Step.Companion::from)
+        val steps = File("day22.txt")
+            .readLines()
+            .map(Step.Companion::from)
         val cubes = mutableSetOf<Vector3>()
 
         for (step in steps) {
             separator()
             println("STEP $step")
             for (x in step.x) {
+                if (x < -50 || x > 50) {
+                    continue
+                }
                 for (y in step.y) {
+                    if (y < -50 || y > 50) {
+                        continue
+                    }
                     for (z in step.z) {
+                        if (z < -50 || z > 50) {
+                            continue
+                        }
                         val cube = Vector3(x, y, z)
                         when (step.switch) {
                             Step.Switch.ON -> cubes += cube
