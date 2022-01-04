@@ -15,7 +15,7 @@ class Day21 {
     fun part2() {
         val root = State(listOf(
             Player(4),
-            Player(8),
+            Player(3),
         ), 0)
         root.debug("Initial state")
 

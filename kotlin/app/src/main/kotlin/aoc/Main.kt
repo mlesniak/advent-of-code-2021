@@ -1,5 +1,5 @@
 package aoc
 
 fun main() {
-    Day21().part2()
+    Day22().part1()
 }
