@@ -1,14 +1,16 @@
 package aoc
 
+import aoc.Day22.Step.Switch.NONE
 import aoc.Day22.Step.Switch.OFF
 import aoc.Day22.Step.Switch.ON
 import java.io.File
 
 class Day22 {
-
     data class Step(val switch: Switch, val x: IntRange, val y: IntRange, val z: IntRange) {
         enum class Switch {
-            ON, OFF,
+            ON,
+            OFF,
+            NONE,
         }
 
         companion object {
@@ -71,207 +73,105 @@ class Day22 {
 
     fun part2() {
         val initialSteps = File("day22.txt").readLines().map(Step.Companion::from)
-        val (expected, current) = compute(initialSteps)
-        println("$expected == $current")
+        initialSteps.debug("Initial steps")
+
+        val result = compute(initialSteps)
+        println("Part2: $result")
+
+        /**
+         * Algorithm: Parse the input cuboids. Then start with an empty list (clist)
+         * of cuboids. For each cuboid from the input, calculate the intersections
+         * with the cuboids in the clist. If the intersection is non-empty add it
+         * to the clist with inverted sign w.r.t to the current cuboid in clist.
+         * If that cuboid from the input is set on, add it to the clist as well.
+         * Then add together all the volumes (cuboids with a negative sign will
+         * have a negative volume).
+         **/
     }
 
-    fun compute(initialSteps: Iterable<Step>): Pair<Int, Int> {
-        val (ons, offs) = initialSteps.partition { it.switch == ON }
-
-        val mergedOns = mutableSetOf<Step>()
-        for (i in ons.indices) {
-            var noConflict = true
-            for (j in i + 1 until ons.size) {
-                if (i == j) {
-                    continue
+    fun compute(initialSteps: List<Step>): Long {
+        val processed = mutableListOf<Step>()
+        for (step in initialSteps) {
+            // separator()
+            // step.debug("step")
+            val tmpProc = mutableListOf<Step>()
+            for (proc in processed) {
+                // proc.debug("proc")
+                val intersec = intersection(step, proc)
+                if (intersec != null) {
+                    // intersec.debug("intersec\n  ")
+                    tmpProc += intersec.copy(
+                        switch = if (proc.switch == ON) OFF else ON
+                    )
                 }
-                // for (j in i + 1 until ons.size) {
-                val o1 = ons[i]
-                val o2 = ons[j]
-                separator()
-                println(o1)
-                println(o2)
-                val merged = merge(o1, o2)
-                merged.debug("merged:")
-                if (merged.isNotEmpty()) {
-                    noConflict = false
-                }
-                mergedOns += merged
             }
-            if (noConflict) {
-                mergedOns += ons[i]
+            processed += tmpProc
+            if (step.switch == ON) {
+                processed += step
             }
         }
 
-        separator(description = "Merged Ons")
-        mergedOns.debug()
-        val onscore = computeUsingVector(mergedOns)
-        println("mergedScore=$onscore")
-        val res2 = mergedOns.sumOf { step ->
-            step.x.count() * step.y.count() * step.z.count()
+        // separator(description = "Computed cubes")
+        // processed.debug()
+
+        // separator(description = "Result")
+        val result = processed.sumOf {
+            val signum = if (it.switch == ON) 1L else -1L
+            it.x.count().toLong() * it.y.count().toLong() * it.z.count().toLong() * signum
         }
-        println(res2)
+        return result
+    }
 
-        val mergedOffs = mutableSetOf<Step>()
-        for (i in offs.indices) {
-            var noConflict = true
-            for (j in i + 1 until offs.size) {
-                val o1 = offs[i]
-                val o2 = offs[j]
-                val merged = merge(o1, o2)
-                if (merged.isNotEmpty()) {
-                    noConflict = false
-                }
-                mergedOffs += merged
-            }
-            if (noConflict) {
-                mergedOffs += offs[i]
-            }
-        }
-        if (offs.size == 1) {
-            mergedOffs += offs
-        }
-        separator(description = "Merged Offs")
-        mergedOffs.debug()
+    fun intersection(s: Step, t: Step): Step? {
+        val ix = split(s.x, t.x)
+        val iy = split(s.y, t.y)
+        val iz = split(s.z, t.z)
 
-        // exitProcess(1)
-
-        // separator(description = "ACTUAL COMPUTATION")
-        var steps = mutableSetOf<Step>()
-        var todo = mutableListOf(*mergedOns.toTypedArray())
-        var counter = 0
-        while (todo.isNotEmpty()) {
-            if (counter++ % 100 == 0) {
-                println(todo.size)
-            }
-            // if (counter-- == 0) {
-            //     exitProcess(1)
-            // }
-
-            // println()
-            val on = todo.removeFirst()
-            // on.debug(desc = "on")
-            var noConflict = true
-            for (off in mergedOffs) {
-                // off.debug("against")
-                val x = merge(on, off)
-                // x.debug("against off")
-
-                if (x.isNotEmpty()) {
-                    noConflict = false
-                    break
-                }
-
-                todo += x.filter { it.switch == ON }
-            }
-
-            if (noConflict) {
-                steps += on
-            }
+        if (ix == null || iy == null || iz == null) {
+            return null
         }
 
-        // Corner case: no offs, all Ons are valid.
-        // if (offs.isEmpty()) {
-        //     steps += mergedOns
+        return Step(NONE, ix, iy, iz)
+    }
+
+    internal fun split(i: IntRange, j: IntRange): IntRange? {
+        // val elems = i.intersect(j)
+        // if (elems.isEmpty()) {
+        //     return null
         // }
+        //
+        // return elems.minOrNull()!!..elems.maxOrNull()!!
 
-        // tasklist mit ons
-        // for all offs
-        // a conflict? add new ons
-        // not a conflict? add to final section.
-
-        // Ignore OFFs
-        steps = steps.filter { step -> step.switch == ON }.toMutableSet()
-
-        separator(description = "Steps")
-        steps.debug()
-
-        // Use range multiplication for actual computation.
-        val res = steps.sumOf { step ->
-            step.x.count() * step.y.count() * step.z.count()
+        // Outside right
+        if (i.last < j.first) {
+            return null
         }
 
-        val current = res
-        val expected = computeUsingVector(initialSteps, "expected")
-
-        return expected to current
-    }
-
-    internal fun merge(step1: Step, step2: Step): List<Step> {
-        // println("\nstep1=$step1\nstep2=$step2")
-        val dx = split(step1.switch, step1.x, step2.switch, step2.x)
-        val dy = split(step1.switch, step1.y, step2.switch, step2.y)
-        val dz = split(step1.switch, step1.z, step2.switch, step2.z)
-
-        // println("dx")
-        // dx.debug()
-        // println("dy")
-        // dy.debug()
-        // println("dz")
-        // dz.debug()
-        // separator()
-
-        val steps = mutableListOf<Step>()
-        for (sx in dx) {
-            for (sy in dy) {
-                for (sz in dz) {
-                    var sw = ON
-                    if (sx.switch == OFF && sy.switch == OFF && sz.switch == OFF) {
-                        sw = OFF
-                    }
-                    steps += Step(sw, sx.range, sy.range, sz.range)
-                }
-            }
+        // Outside left
+        if (i.first > j.last) {
+            return null
         }
 
-        // No overlapping at all.
-        if (steps.isEmpty()) {
-            return emptyList()
+        // Fully inside j
+        if (i.first < j.first && i.last >= j.last) {
+            return j.first..j.last
         }
 
-        return steps
-    }
-
-    data class SwitchIntRange(val switch: Step.Switch, val start: Int, val endInclusive: Int) {
-        val range: IntRange get() = IntRange(start, endInclusive)
-        override fun toString(): String {
-            return "($switch,$start,$endInclusive)"
-        }
-    }
-
-    // Assuming b should be removed from a range
-    private fun split(swa: Step.Switch, a: IntRange, swb: Step.Switch, b: IntRange): List<SwitchIntRange> {
-        // b outside right
-        if (a.last < b.first) {
-            return emptyList()
+        // Fully inside i
+        if (i.first >= j.first && i.last <= j.last) {
+            return i.first..i.last
         }
 
-        // b outside left
-        if (a.first > b.last) {
-            return emptyList()
+        // Partial inside right
+        if (i.last >= j.first && i.last < j.last) {
+            return j.first..i.last
         }
 
-        // b from right side
-        if (a.last >= b.first && a.last <= b.last) {
-            return listOf(
-                SwitchIntRange(swa, a.first, b.first - 1),
-                SwitchIntRange(swb, b.first, a.last),
-            ).filter { !it.range.isEmpty() }
+        // Partial inside left
+        if (i.first <= j.last && i.last > j.last) {
+            return i.first..j.last
         }
 
-        // b from left side
-        if (a.first <= b.last && a.first >= b.first) {
-            return listOf(
-                SwitchIntRange(swa, b.last + 1, a.last),
-                SwitchIntRange(swb, a.first, b.last),
-            ).filter { !it.range.isEmpty() }
-        }
-
-        // b inside
-        return listOf(
-            SwitchIntRange(swa, a.first, b.first - 1),
-            SwitchIntRange(swa, b.last + 1, a.last),
-            SwitchIntRange(swb, b.first, b.last),
-        ).filter { !it.range.isEmpty() }
+        throw IllegalStateException("Unknown constellation: i=$i, j=$j")
     }
 }

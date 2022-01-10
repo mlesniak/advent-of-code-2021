@@ -1,130 +1,101 @@
 package aoc
 
 import aoc.Day22.Step
-import aoc.Day22.Step.Switch.OFF
 import aoc.Day22.Step.Switch.ON
 import org.junit.Test
+import java.io.File
 import kotlin.test.assertEquals
 
 internal class Day22Test {
     private val sut = Day22()
 
     @Test
-    fun `basic setup`() {
-        val steps = mutableListOf(
-            Step(ON, 1..10, 1..10, 1..10)
-        )
-
-        val (expected, current) = sut.compute(steps)
-        assertEquals(expected, current)
+    fun `file based test`() {
+        val input = File("../day22.txt").readLines().map(Step.Companion::from)
+        validateComputation(*input.toTypedArray())
     }
 
     @Test
-    fun `basic setup with equal ons`() {
-        val steps = mutableListOf(
+    fun `check complex on case`() {
+        validateComputation(
+            Step(ON, 1..3, 0..3, 0..2),
+            Step(ON, 0..2, 1..2, 1..3),
+        )
+    }
+
+    @Test
+    fun `y inside bug`() {
+        val intersec = sut.split(0..3, 1..2)
+        println(intersec)
+        val message = (0..3).intersect(-10..-2)
+        println(message)
+    }
+
+
+
+    @Test
+    fun `check trivial computation`() {
+        validateComputation(
+            Step(ON, 1..4, 1..4, 1..4),
+            Step(ON, 5..10, 5..10, 5..10)
+        )
+    }
+
+    @Test
+    fun `check intersected computation`() {
+        validateComputation(
+            Step(ON, 1..5, 1..5, 1..5),
+            Step(ON, 5..10, 5..10, 5..10)
+        )
+    }
+
+    @Test
+    fun `intersection half`() {
+        showIntersection(
             Step(ON, 1..10, 1..10, 1..10),
+            Step(ON, 5..10, 5..10, 5..10))
+    }
+
+    @Test
+    fun `intersection full`() {
+        showIntersection(
             Step(ON, 1..10, 1..10, 1..10),
-        )
-
-        val (expected, current) = sut.compute(steps)
-        assertEquals(expected, current)
+            Step(ON, 1..10, 1..10, 1..10))
     }
 
     @Test
-    fun `basic setup with overlapping ons`() {
-        val steps = mutableListOf(
-            Step(ON, 1..10, 1..10, 1..10),
-            Step(ON, 5..10, 5..10, 5..10),
-        )
-
-        val (expected, current) = sut.compute(steps)
-        assertEquals(expected, current)
+    fun `intersection single line`() {
+        showIntersection(
+            Step(ON, 1..5, 1..5, 1..5),
+            Step(ON, 5..10, 5..10, 5..10))
     }
 
     @Test
-    fun `basic setup with one one and one off, non-overlapping`() {
-        val steps = mutableListOf(
-            Step(ON, 1..10, 1..10, 1..10),
-            Step(OFF, 11..20, 11..20, 11..20),
-        )
-
-        val (expected, current) = sut.compute(steps)
-        assertEquals(expected, current)
+    fun `intersection none`() {
+        showIntersection(
+            Step(ON, 1..5, 1..5, 1..5),
+            Step(ON, 6..10, 6..10, 6..10))
     }
 
-    @Test
-    fun `basic setup with one one and one off, complete-overlapping`() {
-        val steps = mutableListOf(
-            Step(ON, 1..10, 1..10, 1..10),
-            Step(OFF, 1..10, 1..10, 1..10),
-        )
+    private fun validateComputation(vararg steps: Step) {
+        val input = listOf(*steps)
+        input.debug("input")
+        val expected = sut.computeUsingVector(input)
 
-        val (expected, current) = sut.compute(steps)
-        assertEquals(expected, current)
+        val part2 = sut.compute(input)
+        expected.debug("expected")
+        part2.debug("computed")
+        assertEquals(expected, part2)
     }
 
-    @Test
-    fun `two offs, no overlapping`() {
-        val steps = mutableListOf(
-            Step(ON, 1..10, 1..10, 1..10),
-            Step(OFF, 1..10, 1..10, 1..4),
-            Step(OFF, 1..10, 1..10, 5..10),
-        )
-
-        val (expected, current) = sut.compute(steps)
-        assertEquals(expected, current)
+    private fun showIntersection(p1: Step, p2: Step) {
+        val input = listOf(p1, p2)
+        input.debug("input")
+        val intersection = sut.intersection(input[0], input[1])
+        if (intersection == null) {
+            println("No intersection")
+            return
+        }
+        intersection.debug("intersection")
     }
-
-    @Test
-    fun `merge two offs`() {
-        val steps = mutableListOf(
-            Step(OFF, 1..10, 1..10, 1..10),
-            Step(OFF, 1..10, 1..10, 5..10),
-        )
-
-        val merged = sut.merge(steps[0], steps[1])
-        merged.debug()
-    }
-
-    @Test
-    fun `do not merge two non-verlapping offs`() {
-        val steps = mutableListOf(
-            Step(OFF, 1..10, 1..10, 1..4),
-            Step(OFF, 1..10, 1..10, 5..10),
-        )
-
-        val merged = sut.merge(steps[0], steps[1])
-        merged.debug()
-    }
-
-    @Test
-    fun `merge overlapping ons`() {
-        val steps = mutableListOf(
-            Step(ON, 1..10, 1..10, 1..10),
-            Step(ON, 5..10, 5..10, 5..10),
-        )
-
-        val merged = sut.merge(steps[0], steps[1])
-        merged.debug()
-        sut.computeUsingVector(merged).debug()
-    }
-
-
-    @Test
-    // Later: split offs, remove ons
-    // Later: normal procedure, then remove offs
-    fun `split initial ons, remove offs for minimum set`() {
-        val steps = mutableListOf(
-            Step(ON, 1..10, 1..10, 1..10),
-            Step(ON, 1..10, 1..10, 5..10),
-        )
-        separator(description = "Current")
-        println(sut.compute(steps))
-
-        val merged = sut.merge(steps[0], steps[1])
-        merged.debug()
-        separator(description = "After cleanup")
-        println(sut.compute(merged))
-    }
-
 }
