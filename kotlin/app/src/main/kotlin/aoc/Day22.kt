@@ -3,7 +3,6 @@ package aoc
 import aoc.Day22.Step.Switch.OFF
 import aoc.Day22.Step.Switch.ON
 import java.io.File
-import kotlin.system.exitProcess
 
 class Day22 {
 
@@ -119,9 +118,9 @@ class Day22 {
         var todo = mutableListOf(*mergedOns.toTypedArray())
         var counter = 10
         while (todo.isNotEmpty()) {
-            if (counter-- == 0) {
-                exitProcess(1)
-            }
+            // if (counter-- == 0) {
+            //     exitProcess(1)
+            // }
 
             println()
             val on = todo.removeFirst()
