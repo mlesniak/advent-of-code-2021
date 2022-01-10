@@ -1,6 +1,9 @@
 package aoc
 
-fun <T> Collection<T>.debug() {
+fun <T> Collection<T>.debug(desc: String? = null) {
+    if (desc != null) {
+        println("$desc:")
+    }
     for (elem in this) {
         println(elem)
     }
@@ -26,6 +29,7 @@ fun Any.debug(desc: String? = null) {
     println(this)
 }
 
-fun separator(count: Int = 80, char: Char = '-') {
-    println("$char".repeat(count))
+fun separator(count: Int = 80, char: Char = '-', description: String = "") {
+    val prefix = if (description.isEmpty()) "" else "\n$char $description "
+    println(prefix + "$char".repeat(count - prefix.length))
 }
