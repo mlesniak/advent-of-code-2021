@@ -97,6 +97,18 @@ internal class Day22Test {
         merged.debug()
     }
 
+    @Test
+    fun `merge overlapping ons`() {
+        val steps = mutableListOf(
+            Step(ON, 1..10, 1..10, 1..10),
+            Step(ON, 5..10, 5..10, 5..10),
+        )
+
+        val merged = sut.merge(steps[0], steps[1])
+        merged.debug()
+        sut.computeUsingVector(merged).debug()
+    }
+
 
     @Test
     // Later: split offs, remove ons

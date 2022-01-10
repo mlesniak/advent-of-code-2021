@@ -78,32 +78,54 @@ class Day22 {
     fun compute(initialSteps: Iterable<Step>): Pair<Int, Int> {
         val (ons, offs) = initialSteps.partition { it.switch == ON }
 
-        // TODO(mlesniak) do this
-        // Split ons
-        // Split offs
-
         val mergedOns = mutableSetOf<Step>()
         for (i in ons.indices) {
+            var noConflict = true
             for (j in i + 1 until ons.size) {
+                if (i == j) {
+                    continue
+                }
+                // for (j in i + 1 until ons.size) {
                 val o1 = ons[i]
                 val o2 = ons[j]
+                separator()
+                println(o1)
+                println(o2)
                 val merged = merge(o1, o2)
+                merged.debug("merged:")
+                if (merged.isNotEmpty()) {
+                    noConflict = false
+                }
                 mergedOns += merged
             }
+            if (noConflict) {
+                mergedOns += ons[i]
+            }
         }
-        if (ons.size == 1) {
-            mergedOns += ons
-        }
+
         separator(description = "Merged Ons")
         mergedOns.debug()
+        val onscore = computeUsingVector(mergedOns)
+        println("mergedScore=$onscore")
+        val res2 = mergedOns.sumOf { step ->
+            step.x.count() * step.y.count() * step.z.count()
+        }
+        println(res2)
 
         val mergedOffs = mutableSetOf<Step>()
         for (i in offs.indices) {
+            var noConflict = true
             for (j in i + 1 until offs.size) {
                 val o1 = offs[i]
                 val o2 = offs[j]
                 val merged = merge(o1, o2)
+                if (merged.isNotEmpty()) {
+                    noConflict = false
+                }
                 mergedOffs += merged
+            }
+            if (noConflict) {
+                mergedOffs += offs[i]
             }
         }
         if (offs.size == 1) {
@@ -111,39 +133,47 @@ class Day22 {
         }
         separator(description = "Merged Offs")
         mergedOffs.debug()
-        // TODO(mlesniak) remove ons
 
-        separator(description = "ACTUAL COMPUTATION")
+        // exitProcess(1)
+
+        // separator(description = "ACTUAL COMPUTATION")
         var steps = mutableSetOf<Step>()
         var todo = mutableListOf(*mergedOns.toTypedArray())
-        var counter = 10
+        var counter = 0
         while (todo.isNotEmpty()) {
+            if (counter++ % 100 == 0) {
+                println(todo.size)
+            }
             // if (counter-- == 0) {
             //     exitProcess(1)
             // }
 
-            println()
+            // println()
             val on = todo.removeFirst()
-            on.debug(desc = "on")
+            // on.debug(desc = "on")
+            var noConflict = true
             for (off in mergedOffs) {
-                off.debug("against")
+                // off.debug("against")
                 val x = merge(on, off)
-                x.debug("against off")
+                // x.debug("against off")
 
-                // If not a conflict, since the same, next one
-                if (x.isEmpty()) {
-                    println("found real on: $on")
-                    steps += on
+                if (x.isNotEmpty()) {
+                    noConflict = false
+                    break
                 }
 
                 todo += x.filter { it.switch == ON }
             }
+
+            if (noConflict) {
+                steps += on
+            }
         }
 
         // Corner case: no offs, all Ons are valid.
-        if (offs.isEmpty()) {
-            steps += mergedOns
-        }
+        // if (offs.isEmpty()) {
+        //     steps += mergedOns
+        // }
 
         // tasklist mit ons
         // for all offs
