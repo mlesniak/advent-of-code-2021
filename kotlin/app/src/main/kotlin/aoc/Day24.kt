@@ -1,6 +1,9 @@
 package aoc
 
 import java.io.File
+import kotlin.math.abs
+import kotlin.random.Random
+import kotlin.system.exitProcess
 
 class Day24 {
     open class Command {
@@ -65,10 +68,26 @@ class Day24 {
         // commands.debug("Parsed input")
 
         separator(description = "Running program")
-        val result = run("13579246899999", commands)
-        for ((k, v) in result) {
-            println("$k=$v")
+
+        for (i in 1..1_000_000) {
+            val id = randomSerialNumber()
+            println("$i -> $id")
+            val result = run("13579246899999", commands)
+            if (result["z"] == 0) {
+                println("Found")
+                exitProcess(1)
+            }
         }
+    }
+
+    fun randomSerialNumber(): String {
+        val rnd: Random = Random.Default
+        val chars = "123456789"
+        val sb = StringBuilder()
+        repeat(14) {
+            sb.append(chars[abs(rnd.nextInt()) % chars.length])
+        }
+        return sb.toString()
     }
 
     fun run(input: String, commands: List<Command>): Map<String, Int> {
