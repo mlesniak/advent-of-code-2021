@@ -58,7 +58,9 @@ class Day24 {
             }
 
             fun parse(lines: List<String>): List<Command> {
-                return lines.map { Command.parse(it) }
+                return lines
+                    .filter { it.isNotBlank() }
+                    .map { parse(it) }
             }
         }
     }
