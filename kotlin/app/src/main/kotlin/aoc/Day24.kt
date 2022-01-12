@@ -3,7 +3,6 @@ package aoc
 import java.io.File
 import kotlin.math.abs
 import kotlin.random.Random
-import kotlin.system.exitProcess
 
 class Day24 {
     open class Command {
@@ -69,17 +68,29 @@ class Day24 {
         val commands = Command.parse(File("day24.txt").readLines())
         // commands.debug("Parsed input")
 
-        separator(description = "Running program")
-
-        for (i in 1..1_000_000) {
-            val id = randomSerialNumber()
-            println("$i -> $id")
-            val result = run("13579246899999", commands)
-            if (result["z"] == 0) {
-                println("Found")
-                exitProcess(1)
+        // 14 times the same computation as shown here!
+        val coms = mutableListOf<Command>()
+        for (c in commands) {
+            if (c is Command.Inp) {
+                println(coms)
+                coms.clear()
+                continue
             }
+
+            coms += c
         }
+
+        // separator(description = "Running program")
+        //
+        // for (i in 1..1_000_000) {
+        //     val id = randomSerialNumber()
+        //     println("$i -> $id")
+        //     val result = run("13579246899999", commands)
+        //     if (result["z"] == 0) {
+        //         println("Found")
+        //         exitProcess(1)
+        //     }
+        // }
     }
 
     fun randomSerialNumber(): String {
